@@ -1,7 +1,7 @@
 package repository;
 
-import entities.Tweet;
 import entities.Tag;
+import entities.Tweet;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -20,5 +20,5 @@ public interface TagRepository {
 
     List<Tag> getTags(Tweet tweet);
 
-    void setArticlesTag(List<Tag> tags, Tweet tweet);
+    void setTweetTag(List<Tag> tags, Tweet tweet);
 }

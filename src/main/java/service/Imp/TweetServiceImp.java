@@ -32,7 +32,7 @@ public class TweetServiceImp implements TweetService {
         Tweet tweet = new Tweet(userRepositoryImp.findByUserId(authenticationServiceImp.getLoggedUser().getId()), title, articleCategory, articleText);
         tweet = tweetRepositoryImp.create(tweet);
         System.out.println(tweet.getId());
-        tagRepositoryImp.setArticlesTag(brief, tweet);
+        tagRepositoryImp.setTweetTag(brief, tweet);
     }
 @Override
     public void showAnArticleList(List<Tweet> tweets) throws SQLException {
@@ -137,7 +137,7 @@ public class TweetServiceImp implements TweetService {
                 }
                 if (choose2 == -1) {
                     tagRepositoryImp.delete(choosenTweet.getId());
-                    tagRepositoryImp.setArticlesTag(newTags, choosenTweet);
+                    tagRepositoryImp.setTweetTag(newTags, choosenTweet);
                     tweetRepositoryImp.setLastUpdateDate(choosenTweet);
                     System.out.println("Tag list updated successfully");
                     break;

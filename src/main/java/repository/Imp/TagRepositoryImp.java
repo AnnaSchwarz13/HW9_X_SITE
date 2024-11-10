@@ -135,8 +135,7 @@ public class TagRepositoryImp implements TagRepository {
         }
     }
 
-    @Override
-    public void setArticlesTag(List<Tag> tags, Tweet tweet) {
+    public void setTweetTag(List<Tag> tags, Tweet tweet) {
         try (var statement = Datasource.getConnection().prepareStatement(INSET_ARTICLES_TAGS)) {
             for (Tag tag : tags) {
                 statement.setLong(1, tweet.getId());
