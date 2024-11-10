@@ -1,6 +1,7 @@
 package service.Imp;
 
-import entities.enums.Role;
+import entities.User;
+import repository.Imp.UserRepositoryImp;
 import service.AuthenticationService;
 
 public class AuthenticationServiceImp implements AuthenticationService {
@@ -19,20 +20,14 @@ public class AuthenticationServiceImp implements AuthenticationService {
         }
     }
 @Override
-    public boolean checkRole(Role role, User user) {
-        return user.getRole().equals(role);
-    }
-@Override
     public User getLoggedUser() {
         return loggedInUser;
     }
 @Override
-    public boolean isUserNameNew(String username, Role role) {
+    public boolean isUserNameNew(String username) {
         for (User checkingUser : userRepositoryImp.all()) {
             if (checkingUser.getUsername().equals(username)) {
-                if (checkingUser.getRole().equals(role)) {
                     return false;
-                }
             }
         }
         return true;

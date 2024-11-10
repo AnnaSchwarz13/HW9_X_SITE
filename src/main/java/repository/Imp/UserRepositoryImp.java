@@ -7,6 +7,7 @@ import repository.UserRepository;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,7 +44,7 @@ public class UserRepositoryImp implements UserRepository {
             statement.setString(2, user.getPassword());
             statement.setString(3, user.getBio());
             statement.setString(4, user.getEmail());
-            statement.setDate(5, (Date) user.getCreationDate());
+            statement.setDate(5, Date.valueOf(LocalDate.now()));
             statement.setString(6, user.getDisplayName());
 
             statement.executeUpdate();
@@ -66,12 +67,13 @@ public class UserRepositoryImp implements UserRepository {
                 String bio = resultSet.getString(5);
                 String displayName = resultSet.getString(6);
                 Date createdDate = resultSet.getDate(7);
-                user = new User(username,password,uerId,displayName,userEmail,bio,createdDate);
+                user = new User(username, password, uerId, displayName, userEmail, bio, createdDate);
             }
 
             return user;
         }
     }
+
     //update
     @Override
     public void setUpdatePassword(User user, String password) throws SQLException {
@@ -100,14 +102,15 @@ public class UserRepositoryImp implements UserRepository {
         }
 
     }
+
     @Override
     public User findByUsername(String username) throws SQLException {
-        try (var statement = Datasource.getConnection().prepareStatement(FIND_ID_BY_USERNAME_SQL)){
+        try (var statement = Datasource.getConnection().prepareStatement(FIND_ID_BY_USERNAME_SQL)) {
             statement.setString(1, username);
             ResultSet resultSet = statement.executeQuery();
-            User user=null;
+            User user = null;
             if (resultSet.next()) {
-                user =read( resultSet.getLong(1));
+                user = read(resultSet.getLong(1));
             }
             return user;
         }

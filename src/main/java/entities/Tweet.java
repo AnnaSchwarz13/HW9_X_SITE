@@ -31,6 +31,11 @@ public class Tweet {
         this.dislikes_ids = dislikes_ids;
         this.views_ids = views_ids;
     }
+
+    public Tweet(User user, String content) {
+        this.user = user;
+        this.content = content;
+    }
 }
 
 

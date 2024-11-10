@@ -15,7 +15,7 @@ public class TagServiceImp implements TagService {
 @Override
     public List<Tag> setArticleTags() throws SQLException {
         List<Tag> tags = new ArrayList<>();
-        System.out.println("Please enter the tags of the article: \n at the end enter -1");
+        System.out.println("Please enter the tags of the tweet: \n at the end enter -1");
         for (Tag tag : tagRepositoryImp.all()) {
             System.out.println(tag.getTitle());
         }
