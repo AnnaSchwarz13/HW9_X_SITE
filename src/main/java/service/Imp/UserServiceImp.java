@@ -20,11 +20,26 @@ public class UserServiceImp implements UserService {
 
 
     @Override
-    public void userLogin(String username, String password) throws SQLException {
+    public void userLoginUsername(String username, String password) throws SQLException {
         for (User checkingUser : userRepositoryImp.all()) {
             if (checkingUser.getUsername().equals(username)) {
                 if (checkingUser.getPassword().equals(password)) {
                     authenticationServiceImp.setLoggedUser(userRepositoryImp.findByUsername(username));
+                    System.out.println("User logged in successfully...");
+                    return;
+
+                }
+                break;
+            }
+        }
+        System.out.println("Username or password is wrong!");
+    }
+    @Override
+    public void userLoginEmail(String email, String password) throws SQLException {
+        for (User checkingUser : userRepositoryImp.all()) {
+            if (checkingUser.getEmail().equals(email)) {
+                if (checkingUser.getPassword().equals(password)) {
+                    authenticationServiceImp.setLoggedUser(userRepositoryImp.findByUsername(checkingUser.getUsername()));
                     System.out.println("User logged in successfully...");
                     return;
 
