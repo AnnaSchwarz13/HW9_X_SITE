@@ -27,7 +27,9 @@ public class TweetRepositoryImp implements TweetRepository {
             DELETE FROM tweets
             WHERE id = ?
             """;
-
+    private static final String ALL_TWEETS = """
+            SELECT * FROM tweets
+            """;
     private static final String FIND_BY_ID_SQL = """
             SELECT * FROM tweets
             WHERE id = ?
@@ -85,7 +87,7 @@ public class TweetRepositoryImp implements TweetRepository {
                     dislikes.add(Integer.valueOf(tok));
                 }
 
-                tweet = new Tweet(user,tweetId,text,postedDate,likes,dislikes,views);
+                tweet = new Tweet(user, tweetId, text, postedDate, likes, dislikes, views);
                 tweet.setBrief(tagRepositoryImp.getTags(tweet));
             }
             return tweet;
@@ -115,9 +117,17 @@ public class TweetRepositoryImp implements TweetRepository {
     }
 
     @Override
-    public List<Tweet> getTweetsOfAnAuthor(User user) {
+    public List<Tweet> getTweetsOfAUser(User user) {
         try (var statement = Datasource.getConnection().prepareStatement(FIND_ALL_AUTHOR_ARTICLES_SQL)) {
             statement.setLong(1, user.getId());
+            return getArticles(statement);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @Override
+    public List<Tweet> all() {
+        try (var statement = Datasource.getConnection().prepareStatement(ALL_TWEETS)) {
             return getArticles(statement);
         } catch (SQLException e) {
             throw new RuntimeException(e);

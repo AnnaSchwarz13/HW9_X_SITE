@@ -15,7 +15,8 @@ public interface TweetRepository {
 
     void updateText(Tweet tweet, String newValue) throws SQLException;
 
-    List<Tweet> getTweetsOfAnAuthor(User user);
+    List<Tweet> getTweetsOfAUser(User user);
+    List<Tweet> all();
 
 
 }

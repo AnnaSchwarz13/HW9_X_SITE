@@ -20,7 +20,7 @@ public class TweetServiceImp implements TweetService {
     Scanner sc = new Scanner(System.in);
 
     @Override
-    public void addArticle() throws SQLException {
+    public void addTweet() throws SQLException {
         System.out.println("Enter tweet text: ");
         String tweetText = sc.nextLine();
         List<Tag> brief = tagServiceImp.setArticleTags();
