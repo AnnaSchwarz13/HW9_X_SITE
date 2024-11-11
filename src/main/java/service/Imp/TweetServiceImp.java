@@ -148,11 +148,11 @@ public class TweetServiceImp implements TweetService {
                     2.REJECT""");
             int action = sc.nextInt();
             if (action == 1) {
+                deleteTweetRetweet(choosenTweet);
                 tweetRepositoryImp.deleteRecords(choosenTweet.getId(),"like");
                 tweetRepositoryImp.deleteRecords(choosenTweet.getId(),"dislike");
-                tweetRepositoryImp.deleteRecords(choosenTweet.getId(),"retweet");//just records?
                 tweetRepositoryImp.deleteRecords(choosenTweet.getId(),"view");
-                tweetRepositoryImp.delete(choosenTweet.getId());
+                tweetRepositoryImp.deleteRecords(choosenTweet.getId(),"retweet");
             }
             else if (action == 2) {
                 System.out.println("Action canceled !");
@@ -210,6 +210,15 @@ public class TweetServiceImp implements TweetService {
                 System.out.println("\n\treplayed to tweetId " + choosenTweet.getId());
                 displayRetweet(TweetRepositoryImp.read(retweet));
             }
+        }
+    }
+
+    private void deleteTweetRetweet(Tweet tweet) throws SQLException {
+        if(!tweet.getRetweets().isEmpty()) {
+            for (Long retweet : tweet.getRetweets()) {
+                displayRetweet(TweetRepositoryImp.read(retweet));
+            }
+           tweetRepositoryImp.delete(tweet.getId());
         }
     }
 
