@@ -34,8 +34,7 @@ public static void main(String[] args) throws SQLException {
                     2.Tweet a new text
                     3.Edit your tweets
                     4.Edite profile
-                    5.Change password
-                    6.logout""");
+                    5.logout""");
             int option = scanner.nextInt();
             xSiteMenu(option);
 
@@ -89,12 +88,6 @@ public static void xSiteMenu(int option) throws SQLException {
     } else if (option == 4) {
         userService.changeProfile();
     } else if (option == 5) {
-        System.out.println("enter your old password:");
-        String oldPassword = scanner.next();
-        System.out.println("enter your new password:");
-        String newPassword = scanner.next();
-        userService.changePassword(oldPassword, newPassword);
-    } else if (option == 6) {
         System.out.println("See you dear " + authenticationService.getLoggedUser().getDisplayName());
         userService.userLogout();
     }

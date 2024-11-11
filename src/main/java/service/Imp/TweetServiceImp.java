@@ -10,8 +10,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
-;
-
 public class TweetServiceImp implements TweetService {
     TweetRepositoryImp tweetRepositoryImp = new TweetRepositoryImp();
     TagRepositoryImp tagRepositoryImp = new TagRepositoryImp();
@@ -34,22 +32,33 @@ public class TweetServiceImp implements TweetService {
         if (tweets.isEmpty()) {
             System.out.println("there is no Tweet");
         } else {
-            System.out.println("for more enter tweet's id else -1 ");
+            while (true) {
+                System.out.println("for more action enter tweet's id else -1 ");
 
-            for (Tweet tempTweet : tweets) {
-                displayTweet(tempTweet);
+                for (Tweet tempTweet : tweets) {
+                    displayTweet(tempTweet);
+                    //add to view
+                }
+
+                long id = sc.nextLong();
+
+                if (id == -1) {
+                    break;
+                } else if (TweetRepositoryImp.read(id) != null) {
+                    System.out.println("""
+                            1.Like!
+                            2.Dislike!
+                            3.Retweet""");
+                    int action = sc.nextInt();
+                    if (action == 1) {}
+                    else if (action == 2) {}
+                    else if (action == 3) {}
+                } else {
+                    System.out.println("wrong id");
+                }
             }
 
-            long id = sc.nextLong();
-            Tweet userChoice = TweetRepositoryImp.read(id);
-            if (userChoice != null) {
-                System.out.println("""
-                        1.Like!
-                        2.Dislike!
-                        3.Retweet""");
-            }
         }
-
     }
 
     @Override
@@ -61,7 +70,7 @@ public class TweetServiceImp implements TweetService {
                 """
         );
         int choose = sc.nextInt();
-      if (choose == 1) {
+        if (choose == 1) {
             System.out.println("Please enter the new content:");
             String newText = sc.nextLine() + sc.nextLine();
             tweetRepositoryImp.updateText(choosenTweet, newText);

@@ -5,10 +5,7 @@ import entities.User;
 import repository.Datasource;
 import repository.TweetRepository;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -53,6 +50,18 @@ public class TweetRepositoryImp implements TweetRepository {
             ORDER BY id DESC
             LIMIT 1
             """;
+    public static final String GET_LIKES_SQL = """
+            SELECT like_id FROM likes_tweet
+            WHERE tweet_id = ?
+            """;
+    public static final String GET_DISLIKES_SQL = """
+            SELECT dislike_id FROM dislikes_tweet
+            WHERE tweet_id = ?
+            """;
+    public static final String GET_VIEWS_SQL = """
+            SELECT view_id FROM views_tweet
+            WHERE tweet_id = ?
+            """;
 
     public static Tweet read(long id) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(FIND_BY_ID_SQL)) {
@@ -66,28 +75,11 @@ public class TweetRepositoryImp implements TweetRepository {
                 Date postedDate = resultSet.getDate(3);
                 long userId = resultSet.getLong(4);
                 User user = UserRepositoryImp.read(userId);
-                List<Integer> views = new ArrayList<>();
-                String viewsS = resultSet.getString(5);
-                String[] tokens = viewsS.split(",");
-                for (String token : tokens) {
-                    views.add(Integer.valueOf(token));
-                }
 
-                List<Integer> likes = new ArrayList<>();
-                String likesS = resultSet.getString(6);
-                String[] tokes = likesS.split(",");
-                for (String toke : tokes) {
-                    likes.add(Integer.valueOf(toke));
-                }
-
-                List<Integer> dislikes = new ArrayList<>();
-                String dislikesS = resultSet.getString(7);
-                String[] toks = dislikesS.split(",");
-                for (String tok : toks) {
-                    dislikes.add(Integer.valueOf(tok));
-                }
-
-                tweet = new Tweet(user, tweetId, text, postedDate, likes, dislikes, views);
+                tweet = new Tweet(user, tweetId, text, postedDate);
+                tweet.setDislikes_ids(getDislikesOfTweet(tweetId));
+                tweet.setViews_ids(getViewsOfTweet(tweetId));
+                tweet.setLikes_ids(getLikesOfTweet(tweetId));
                 tweet.setBrief(tagRepositoryImp.getTags(tweet));
             }
             return tweet;
@@ -120,7 +112,7 @@ public class TweetRepositoryImp implements TweetRepository {
     public List<Tweet> getTweetsOfAUser(User user) {
         try (var statement = Datasource.getConnection().prepareStatement(FIND_ALL_AUTHOR_ARTICLES_SQL)) {
             statement.setLong(1, user.getId());
-            return getArticles(statement);
+            return getTweets(statement);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -128,13 +120,13 @@ public class TweetRepositoryImp implements TweetRepository {
     @Override
     public List<Tweet> all() {
         try (var statement = Datasource.getConnection().prepareStatement(ALL_TWEETS)) {
-            return getArticles(statement);
+            return getTweets(statement);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static List<Tweet> getArticles(PreparedStatement statement) throws SQLException {
+    private static List<Tweet> getTweets(PreparedStatement statement) throws SQLException {
         ResultSet resultSet = statement.executeQuery();
         List<Tweet> publishedTweets = new LinkedList<>();
         while (resultSet.next()) {
@@ -157,9 +149,10 @@ public class TweetRepositoryImp implements TweetRepository {
         }
     }
 
+
     //----
     @Override
-    public Tweet findArticleByTile(String title) throws SQLException {
+    public Tweet findTweetByTile(String title) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(FIND_BY_TITLE_SQL)) {
             statement.setString(1, title);
             ResultSet resultSet = statement.executeQuery();
@@ -185,6 +178,44 @@ public class TweetRepositoryImp implements TweetRepository {
             }
             return id;
         }
+    }
+
+    private static List<Long> getViewsOfTweet(long id) {
+        try (var statement = Datasource.getConnection().prepareStatement(GET_VIEWS_SQL)) {
+            statement.setLong(1, id);
+            return getIds(statement);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    private static List<Long> getDislikesOfTweet(long id) {
+        try (var statement = Datasource.getConnection().prepareStatement(GET_DISLIKES_SQL)) {
+            statement.setLong(1, id);
+            return getIds(statement);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static  List<Long> getLikesOfTweet(long id) {
+        try (var statement = Datasource.getConnection().prepareStatement(GET_LIKES_SQL)) {
+            statement.setLong(1, id);
+            return getIds(statement);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static List<Long> getIds(PreparedStatement statement) throws SQLException {
+        ResultSet resultSet = statement.executeQuery();
+        List<Long> ids = new LinkedList<>();
+        while (resultSet.next()) {
+            long id = resultSet.getLong(1);
+            ids.add(id);
+        }
+        return new ArrayList<>(ids);
     }
 }
 
