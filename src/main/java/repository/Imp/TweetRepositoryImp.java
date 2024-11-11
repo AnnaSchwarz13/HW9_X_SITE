@@ -157,6 +157,13 @@ public class TweetRepositoryImp implements TweetRepository {
             return tweet;
         }
     }
+    @Override
+    public void setRetweet(long tweetId) throws SQLException {
+        try(var statement = Datasource.getConnection().prepareStatement(SET_TWEETED_SQL)){
+            statement.setLong(1, tweetId);
+            statement.executeUpdate();
+        }
+    }
 
     @Override
     public void delete(long id) throws SQLException {
@@ -171,7 +178,7 @@ public class TweetRepositoryImp implements TweetRepository {
     public void deleteActions(long tweetId, long userId, String which) throws SQLException {
         actionChoose(tweetId, userId, which, DELETE_LIKE_SQL, DELETE_DISLIKE_SQL, DELETE_VIEW_SQL, DELETE_RETWEET_SQL);
     }
-
+@Override
     public void deleteRecords(long tweetId, String which) throws SQLException {
         PreparedStatement statement = switch (which) {
             case "like" -> Datasource.getConnection().prepareStatement(DELETE_ALL_LIKE_SQL);
@@ -292,11 +299,6 @@ public class TweetRepositoryImp implements TweetRepository {
         }
     }
 
-    public void setRetweet(long tweetId) throws SQLException {
-       try(var statement = Datasource.getConnection().prepareStatement(SET_TWEETED_SQL)){
-           statement.setLong(1, tweetId);
-           statement.executeUpdate();
-       }
-    }
+
 }
 

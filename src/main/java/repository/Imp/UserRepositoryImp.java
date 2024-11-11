@@ -96,21 +96,15 @@ public class UserRepositoryImp implements UserRepository {
     }
 
     //update
-    @Override
-    public void setUpdatePassword(User user, String password) throws SQLException {
-        try (var statement = Datasource.getConnection().prepareStatement(UPDATE_PASSWORD_SQL)) {
-            statement.setString(1, password);
-            statement.setLong(2, user.getId());
-            statement.executeUpdate();
-        }
-    }
 
-    public void updateProfile(User user, String newContent , String which) throws SQLException {
+    @Override
+    public void updateProfile(User user, String newContent, String which) throws SQLException {
         PreparedStatement statement = switch (which) {
             case "bio" -> Datasource.getConnection().prepareStatement(UPDATE_BIO_SQL);
             case "displayName" -> Datasource.getConnection().prepareStatement(UPDATE_DISPLAY_NAME_SQL);
             case "email" -> Datasource.getConnection().prepareStatement(UPDATE_EMAIL_SQL);
             case "username" -> Datasource.getConnection().prepareStatement(UPDATE_USERNAME_SQL);
+            case "password" -> Datasource.getConnection().prepareStatement(UPDATE_PASSWORD_SQL);
             default -> null;
         };
 

@@ -21,5 +21,9 @@ public interface TweetRepository {
 
     void deleteActions(long tweetId, long userId, String which) throws SQLException;
 
+    void deleteRecords(long tweetId, String which) throws SQLException;
+
+    void setRetweet(long tweetId) throws SQLException;
+
 
 }
