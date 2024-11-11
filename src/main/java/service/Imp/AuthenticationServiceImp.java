@@ -51,6 +51,7 @@ public class AuthenticationServiceImp implements AuthenticationService {
         return true;
     }
 
+    @Override
     public boolean isEmailNew(String email) {
         if (userRepositoryImp.all() != null) {
             for (User checkingUser : userRepositoryImp.all()) {
