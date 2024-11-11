@@ -86,6 +86,10 @@ public class TweetRepositoryImp implements TweetRepository {
              INSERT INTO views_tweet(view_id,tweet_id)
              VALUES (?, ?)
             """;
+    private static final String INSERT_retweet_SQL = """
+             INSERT INTO retweet_tweet(retweet_id,tweet_id)
+             VALUES (?, ?)
+            """;
 
     public static Tweet read(long id) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(FIND_BY_ID_SQL)) {
@@ -174,11 +178,13 @@ public class TweetRepositoryImp implements TweetRepository {
         }
     }
 
+    @Override
     public void updateActions(long tweetId, long userId, String which) throws SQLException {
         PreparedStatement statement = switch (which) {
             case "like" -> Datasource.getConnection().prepareStatement(INSERT_like_SQL);
             case "dislike" -> Datasource.getConnection().prepareStatement(INSERT_dislike_SQL);
             case "view" -> Datasource.getConnection().prepareStatement(INSERT_view_SQL);
+            case "retweet" -> Datasource.getConnection().prepareStatement(INSERT_retweet_SQL);
             default -> null;
         };
 

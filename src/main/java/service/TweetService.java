@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface TweetService {
-    void addTweet() throws SQLException;
+    Tweet addTweet() throws SQLException;
     void showTweetList(List<Tweet> tweets) throws SQLException;
     void changeDetailsOfTweet(Tweet choosenTweet) throws SQLException;
     void displayTweet(Tweet choosenTweet);

@@ -21,5 +21,7 @@ public interface TweetRepository {
 
     boolean isUserIn(long tweetId, long userId, String which) throws SQLException;
 
+    void updateActions(long tweetId, long userId, String which) throws SQLException;
+
 
 }

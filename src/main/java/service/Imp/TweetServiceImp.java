@@ -18,13 +18,14 @@ public class TweetServiceImp implements TweetService {
     Scanner sc = new Scanner(System.in);
 
     @Override
-    public void addTweet() throws SQLException {
+    public Tweet addTweet() throws SQLException {
         System.out.println("Enter tweet text: ");
         String tweetText = sc.nextLine();
         List<Tag> brief = tagServiceImp.setArticleTags();
         Tweet tweet = new Tweet(authenticationServiceImp.getLoggedUser(), tweetText);
         tweet = tweetRepositoryImp.create(tweet);
         tagRepositoryImp.setTweetTag(brief, tweet);
+        return tweet;
     }
 
     @Override
@@ -37,8 +38,10 @@ public class TweetServiceImp implements TweetService {
 
                 for (Tweet tempTweet : tweets) {
                     displayTweet(tempTweet);
-                    if(!tempTweet.getViews_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
-                        tweetRepositoryImp.updateActions(tempTweet.getId(),authenticationServiceImp.getLoggedUser().getId(),"view");
+                    if (!tempTweet.getViews_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
+                        tweetRepositoryImp.updateActions(tempTweet.getId()
+                                , authenticationServiceImp.getLoggedUser().getId(), "view");
+                        tempTweet.getViews_ids().add(authenticationServiceImp.getLoggedUser().getId());
                     }
                 }
 
@@ -52,9 +55,36 @@ public class TweetServiceImp implements TweetService {
                             2.Dislike!
                             3.Retweet""");
                     int action = sc.nextInt();
-                    if (action == 1) {}
-                    else if (action == 2) {}
-                    else if (action == 3) {}
+                    if (action == 1) {
+                        if (!TweetRepositoryImp.read(id).getLikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
+                            tweetRepositoryImp.updateActions(TweetRepositoryImp.read(id).getId()
+                                    , authenticationServiceImp.getLoggedUser().getId(), "like");
+                            TweetRepositoryImp.read(id).getLikes_ids().add(authenticationServiceImp.getLoggedUser().getId());
+                            if (TweetRepositoryImp.read(id).getDislikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())){
+
+                            }
+                        } else {
+                            System.out.println("You are already liked!");
+                        }
+                    } else if (action == 2) {
+                        if (!TweetRepositoryImp.read(id).getDislikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
+                            tweetRepositoryImp.updateActions(TweetRepositoryImp.read(id).getId()
+                                    , authenticationServiceImp.getLoggedUser().getId(), "dislike");
+                            TweetRepositoryImp.read(id).getDislikes_ids().add(authenticationServiceImp.getLoggedUser().getId());
+                            if (TweetRepositoryImp.read(id).getLikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())){
+
+                            }
+                        } else {
+                            System.out.println("You are already disliked!");
+                        }
+                    } else if (action == 3) {
+                        System.out.println("replay:");
+                        Tweet tweet = addTweet();
+                            tweetRepositoryImp.updateActions(TweetRepositoryImp.read(id).getId()
+                                    , tweet.getId(), "retweet");
+                            TweetRepositoryImp.read(id).getRetweets().add(tweet);
+
+                    }
                 } else {
                     System.out.println("wrong id");
                 }
