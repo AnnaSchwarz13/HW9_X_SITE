@@ -21,7 +21,7 @@ public class TweetServiceImp implements TweetService {
     public Tweet addTweet() throws SQLException {
         System.out.println("Enter tweet text: ");
         String tweetText = sc.nextLine() + sc.nextLine();
-        List<Tag> brief = tagServiceImp.setArticleTags();
+        List<Tag> brief = tagServiceImp.setTweetTags();
         Tweet tweet = new Tweet(authenticationServiceImp.getLoggedUser(), tweetText);
         tweet = tweetRepositoryImp.create(tweet);
         tagRepositoryImp.setTweetTag(brief, tweet);
@@ -121,7 +121,7 @@ public class TweetServiceImp implements TweetService {
                 System.out.println("for add more enter 1 \n remove one tag enter 2 \n and at the end -1");
                 int choose2 = sc.nextInt();
                 if (choose2 == 1) {
-                    List<Tag> newTagsToAdd = tagServiceImp.setArticleTags();
+                    List<Tag> newTagsToAdd = tagServiceImp.setTweetTags();
                     newTags.addAll(newTagsToAdd);
                 }
                 if (choose2 == 2) {

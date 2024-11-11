@@ -18,7 +18,7 @@ public class UserServiceImp implements UserService {
     public void userSignup(String username, String password, String email, String bio, String displayName) throws SQLException {
         User signingUser = new User(username, passwordAuthenticationImp.hash(password.toCharArray()), displayName, email, bio);
         userRepositoryImp.create(signingUser);
-        System.out.println("Author signed up successfully");
+        System.out.println("User signed up successfully");
     }
 
 

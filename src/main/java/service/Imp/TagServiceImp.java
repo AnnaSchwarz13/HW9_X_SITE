@@ -13,7 +13,7 @@ public class TagServiceImp implements TagService {
     Scanner sc = new Scanner(System.in);
     TagRepositoryImp tagRepositoryImp = new TagRepositoryImp();
 @Override
-    public List<Tag> setArticleTags() throws SQLException {
+    public List<Tag> setTweetTags() throws SQLException {
         List<Tag> tags = new ArrayList<>();
         System.out.println("Please enter the tags of the tweet: \n at the end enter -1");
         for (Tag tag : tagRepositoryImp.all()) {

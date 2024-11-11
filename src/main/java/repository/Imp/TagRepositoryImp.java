@@ -35,11 +35,11 @@ public class TagRepositoryImp implements TagRepository {
             SELECT * FROM Tags
             WHERE title = ?
             """;
-    public static final String FIND_ARTICLES_TAG = """
+    public static final String FIND_TWEETS_TAG = """
             SELECT tag_id FROM Tags_tweets
             WHERE tweet_id = ?
             """;
-    public static final String INSET_ARTICLES_TAGS = """
+    public static final String INSET_TWEETS_TAGS = """
             INSERT INTO Tags_tweets(tweet_id, tag_id) VALUES (?, ?)
             """;
 
@@ -121,7 +121,7 @@ public class TagRepositoryImp implements TagRepository {
 
     @Override
     public List<Tag> getTags(Tweet tweet) {
-        try (var statement = Datasource.getConnection().prepareStatement(FIND_ARTICLES_TAG)) {
+        try (var statement = Datasource.getConnection().prepareStatement(FIND_TWEETS_TAG)) {
             statement.setLong(1, tweet.getId());
             ResultSet resultSet = statement.executeQuery();
             List<Tag> tags = new LinkedList<>();
@@ -136,7 +136,7 @@ public class TagRepositoryImp implements TagRepository {
     }
 
     public void setTweetTag(List<Tag> tags, Tweet tweet) {
-        try (var statement = Datasource.getConnection().prepareStatement(INSET_ARTICLES_TAGS)) {
+        try (var statement = Datasource.getConnection().prepareStatement(INSET_TWEETS_TAGS)) {
             for (Tag tag : tags) {
                 statement.setLong(1, tweet.getId());
                 statement.setLong(2, tag.getId());

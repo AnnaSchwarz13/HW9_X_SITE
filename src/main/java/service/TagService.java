@@ -6,5 +6,5 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface TagService {
-    List<Tag> setArticleTags() throws SQLException;
+    List<Tag> setTweetTags() throws SQLException;
 }

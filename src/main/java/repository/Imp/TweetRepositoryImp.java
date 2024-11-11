@@ -31,11 +31,7 @@ public class TweetRepositoryImp implements TweetRepository {
             SELECT * FROM tweets
             WHERE id = ?
             """;
-    public static final String FIND_BY_TITLE_SQL = """
-            SELECT * FROM tweets
-            WHERE title = ?
-            """;
-    public static final String FIND_ALL_AUTHOR_ARTICLES_SQL = """
+    public static final String FIND_ALL_USER_TWEETS_SQL = """
             SELECT * FROM tweets
             WHERE user_id = ?
             """;
@@ -66,18 +62,7 @@ public class TweetRepositoryImp implements TweetRepository {
             SELECT retweet_id FROM retweet_tweets
             WHERE tweet_id = ?
             """;
-    public static final String is_user_liked = """
-            SELECT * FROM likes_tweet
-            WHERE tweet_id = ? AND like_id = ?
-            """;
-    public static final String is_user_disliked = """
-            SELECT * FROM dislikes_tweet
-            WHERE tweet_id = ? AND dislike_id = ?
-            """;
-    public static final String is_user_viewed = """
-            SELECT * FROM views_tweet
-            WHERE tweet_id = ? AND view_id=?
-            """;
+
     private static final String INSERT_like_SQL = """
              INSERT INTO likes_tweet(like_id,tweet_id)
              VALUES (?, ?)
@@ -205,7 +190,7 @@ public class TweetRepositoryImp implements TweetRepository {
 
     @Override
     public List<Tweet> getTweetsOfAUser(User user) {
-        try (var statement = Datasource.getConnection().prepareStatement(FIND_ALL_AUTHOR_ARTICLES_SQL)) {
+        try (var statement = Datasource.getConnection().prepareStatement(FIND_ALL_USER_TWEETS_SQL)) {
             statement.setLong(1, user.getId());
             return getTweets(statement);
         } catch (SQLException e) {
@@ -250,21 +235,6 @@ public class TweetRepositoryImp implements TweetRepository {
 
 
     //----
-    @Override
-    public Tweet findTweetByTile(String title) throws SQLException {
-        try (var statement = Datasource.getConnection().prepareStatement(FIND_BY_TITLE_SQL)) {
-            statement.setString(1, title);
-            ResultSet resultSet = statement.executeQuery();
-            Tweet tweet = null;
-            if (resultSet.next()) {
-                tweet = read(resultSet.getInt(1));
-            } else {
-                System.out.println("No Article found for title: " + title);
-            }
-
-            return tweet;
-        }
-    }
 
     private static long getLastId(User user) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(GET_LAST_INDEX)) {
@@ -304,28 +274,6 @@ public class TweetRepositoryImp implements TweetRepository {
             ids.add(id);
         }
         return new ArrayList<>(ids);
-    }
-
-    @Override
-    public boolean isUserIn(long tweetId, long userId, String which) throws SQLException {
-        PreparedStatement statement = switch (which) {
-            case "like" -> Datasource.getConnection().prepareStatement(is_user_liked);
-            case "dislike" -> Datasource.getConnection().prepareStatement(is_user_disliked);
-            case "view" -> Datasource.getConnection().prepareStatement(is_user_viewed);
-            default -> null;
-        };
-
-        if (statement != null) {
-            statement.setLong(1, tweetId);
-            statement.setLong(2, userId);
-            ResultSet resultSet = statement.executeQuery();
-            long id = 0;
-            if (resultSet.next()) {
-                id = resultSet.getLong(1);
-            }
-            return id != 0;
-        }
-        return false;
     }
 
     private void actionChoose(long tweetId, long userId, String which, String deleteLikeSql, String deleteDislikeSql, String deleteViewSql, String deleteRetweetSql) throws SQLException {
