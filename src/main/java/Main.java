@@ -16,7 +16,6 @@ static Scanner scanner = new Scanner(System.in);
 
 public static void main(String[] args) throws SQLException {
 
-
     while (true) {
         while (authenticationService.getLoggedUser() == null) {
             System.out.println("\n\nWelcome to X . . .\n");

@@ -87,9 +87,22 @@ public class TweetRepositoryImp implements TweetRepository {
              VALUES (?, ?)
             """;
     private static final String INSERT_retweet_SQL = """
-             INSERT INTO retweet_tweet(retweet_id,tweet_id)
+             INSERT INTO retweet_tweets(retweet_id,tweet_id)
              VALUES (?, ?)
             """;
+    private static final String DELETE_LIKE_SQL = """
+             DELETE FROM LIKES_tweet
+             WHERE tweet_id = ? and like_id = ?
+            """;
+    private static final String DELETE_DISLIKE_SQL = """
+             DELETE FROM disLIKES_tweet
+             WHERE tweet_id = ? and dislike_id = ?
+            """;
+    private static final String DELETE_RETWEET_SQL = """
+             DELETE FROM retweets_tweet
+             WHERE tweet_id = ? and retweet_id = ?
+            """;
+
 
     public static Tweet read(long id) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(FIND_BY_ID_SQL)) {
@@ -133,6 +146,21 @@ public class TweetRepositoryImp implements TweetRepository {
             statement.setLong(1, id);
             var affectedRows = statement.executeUpdate();
             System.out.println("# of Contacts deleted: " + affectedRows);
+        }
+    }
+    @Override
+    public void deleteActions(long tweetId, long userId, String which) throws SQLException {
+        PreparedStatement statement = switch (which) {
+            case "like" -> Datasource.getConnection().prepareStatement(DELETE_LIKE_SQL);
+            case "dislike" -> Datasource.getConnection().prepareStatement(DELETE_DISLIKE_SQL);
+            case "retweet" -> Datasource.getConnection().prepareStatement(DELETE_RETWEET_SQL);
+            default -> null;
+        };
+
+        if (statement != null) {
+            statement.setLong(1, tweetId);
+            statement.setLong(2, userId);
+            statement.executeUpdate();
         }
     }
 
