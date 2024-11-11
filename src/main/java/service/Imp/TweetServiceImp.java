@@ -107,6 +107,7 @@ public class TweetServiceImp implements TweetService {
         if (choose == 1) {
             System.out.println("Please enter the new content:");
             String newText = sc.nextLine() + sc.nextLine();
+            newText = newText +"\n(edited)";
             tweetRepositoryImp.updateText(choosenTweet, newText);
             System.out.println("successful!");
 

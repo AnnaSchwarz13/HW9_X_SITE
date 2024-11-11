@@ -100,7 +100,7 @@ public class UserRepositoryImp implements UserRepository {
     public void setUpdatePassword(User user, String password) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(UPDATE_PASSWORD_SQL)) {
             statement.setString(1, password);
-            statement.setString(2, user.getUsername());
+            statement.setLong(2, user.getId());
             statement.executeUpdate();
         }
     }
@@ -116,7 +116,7 @@ public class UserRepositoryImp implements UserRepository {
 
         if (statement != null) {
             statement.setString(1, newContent);
-            statement.setString(2, user.getUsername());
+            statement.setLong(2, user.getId());
             statement.executeUpdate();
         }
     }

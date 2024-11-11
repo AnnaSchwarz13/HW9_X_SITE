@@ -65,7 +65,7 @@ public class UserServiceImp implements UserService {
 
 
     private void changePassword(String oldPassword, String newPassword) throws SQLException {
-        if (passwordAuthenticationImp.authenticate(authenticationServiceImp.getLoggedUser().getPassword().toCharArray(),oldPassword)) {
+        if (passwordAuthenticationImp.authenticate(oldPassword.toCharArray(),authenticationServiceImp.getLoggedUser().getPassword())) {
             userRepositoryImp.setUpdatePassword(UserRepositoryImp.read(authenticationServiceImp.getLoggedUser().getId()), passwordAuthenticationImp.hash(newPassword.toCharArray()));
             System.out.println("Password changed successfully");
             return;
@@ -81,6 +81,7 @@ public class UserServiceImp implements UserService {
                 return;
             }
             System.out.println("this username is already in use");
+            return;
         }
         System.out.println("Wrong username");
     }
@@ -93,6 +94,7 @@ public class UserServiceImp implements UserService {
                 return;
             }
             System.out.println("this email is already in use");
+            return;
         }
         System.out.println("Wrong email");
     }
@@ -131,10 +133,12 @@ public class UserServiceImp implements UserService {
             System.out.println("Enter new DisplayName");
             String newDisplayName = scanner.next();
             userRepositoryImp.updateProfile(authenticationServiceImp.getLoggedUser(), newDisplayName, "displayName");
+            System.out.println("Successful!");
         } else if (option == 5) {
             System.out.println("Enter new Bio");
             String newBio = scanner.next();
             userRepositoryImp.updateProfile(authenticationServiceImp.getLoggedUser(), newBio, "bio");
+            System.out.println("Successful!");
         }
     }
 }
