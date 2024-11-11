@@ -14,9 +14,11 @@ static UserServiceImp userService = new UserServiceImp();
 static TweetService tweetService = new TweetServiceImp();
 static Scanner scanner = new Scanner(System.in);
 
-public static void main(String[] args) throws SQLException {
+public static void main(String[] args) throws SQLException{
 
     while (true) {
+
+
         while (authenticationService.getLoggedUser() == null) {
             System.out.println("\n\nWelcome to X . . .\n");
             System.out.println("""
@@ -57,18 +59,29 @@ public static void loginMenu(int option) throws SQLException {
         userService.userLoginEmail(email, password);
 
     } else if (option == 3) {
-        System.out.println("enter your username:");
-        String username = scanner.next();
-        System.out.println("enter your password:");
-        String password = scanner.next();
-        System.out.println("enter your email :");
-        String email = scanner.next();
-        System.out.println("enter your Bio :");
-        String bio = scanner.next();
-        System.out.println("enter your display name :\n(this name will show for other users)");
-        String displayName = scanner.next();
-        userService.userSignup(username, password, email, bio, displayName);
-
+        while (true) {
+            System.out.println("enter your username:");
+            String username = scanner.next();
+            if(authenticationService.isUsernameNew(username)) {
+                System.out.println("enter your password:");
+                String password = scanner.next();
+                while (true) {
+                System.out.println("enter your email :");
+                String email = scanner.next();
+                    if (authenticationService.isEmailNew(email)) {
+                        System.out.println("enter your Bio :");
+                        String bio = scanner.next();
+                        System.out.println("enter your display name :\n(this name will show for other users)");
+                        String displayName = scanner.next();
+                        userService.userSignup(username, password, email, bio, displayName);
+                        break;
+                    }
+                    System.out.println("email is already taken");
+                }
+                break;
+            }
+            System.out.println("username is already taken");
+        }
     }
 }
 
@@ -83,7 +96,12 @@ public static void xSiteMenu(int option) throws SQLException {
             tweetService.displayTweet(tweet);
         }
         long id = scanner.nextLong();
-        tweetService.changeDetailsOfTweet(TweetRepositoryImp.read(id));
+        if(TweetRepositoryImp.read(id).getUser().getId() ==authenticationService.getLoggedUser().getId()) {
+            tweetService.changeDetailsOfTweet(TweetRepositoryImp.read(id));
+        }
+        else {
+            System.out.println("Wrong id");
+        }
     } else if (option == 4) {
         userService.changeProfile();
     } else if (option == 5) {

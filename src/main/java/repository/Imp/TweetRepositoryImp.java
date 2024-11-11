@@ -62,6 +62,10 @@ public class TweetRepositoryImp implements TweetRepository {
             SELECT view_id FROM views_tweet
             WHERE tweet_id = ?
             """;
+    public static final String GET_RETWEETS_SQL = """
+            SELECT retweet_id FROM retweet_tweets
+            WHERE tweet_id = ?
+            """;
     public static final String is_user_liked = """
             SELECT * FROM likes_tweet
             WHERE tweet_id = ? AND like_id = ?
@@ -122,6 +126,11 @@ public class TweetRepositoryImp implements TweetRepository {
              DELETE FROM retweets_tweet
              WHERE tweet_id = ?
             """;
+    private static final String SET_TWEETED_SQL = """
+            UPDATE tweets
+            SET isretweeted = true
+            WHERE id = ?
+            """;
 
 
     public static Tweet read(long id) throws SQLException {
@@ -136,11 +145,15 @@ public class TweetRepositoryImp implements TweetRepository {
                 Date postedDate = resultSet.getDate(3);
                 long userId = resultSet.getLong(4);
                 User user = UserRepositoryImp.read(userId);
+                boolean isRetweeted = resultSet.getBoolean(5);
 
                 tweet = new Tweet(user, tweetId, text, postedDate);
-                tweet.setDislikes_ids(getDislikesOfTweet(tweetId));
-                tweet.setViews_ids(getViewsOfTweet(tweetId));
-                tweet.setLikes_ids(getLikesOfTweet(tweetId));
+                tweet.setDislikes_ids(getActionOfTweet(tweetId,"dislike"));
+                tweet.setLikes_ids(getActionOfTweet(tweetId,"like"));
+                tweet.setViews_ids(getActionOfTweet(tweetId,"view"));
+                tweet.setRetweets(getActionOfTweet(tweetId,"retweet"));
+                tweet.setRetweeted(isRetweeted);
+
                 tweet.setBrief(tagRepositoryImp.getTags(tweet));
             }
             return tweet;
@@ -266,33 +279,22 @@ public class TweetRepositoryImp implements TweetRepository {
         }
     }
 
-    private static List<Long> getViewsOfTweet(long id) {
-        try (var statement = Datasource.getConnection().prepareStatement(GET_VIEWS_SQL)) {
+    private static List<Long> getActionOfTweet(long id , String which) throws SQLException {
+        PreparedStatement statement = switch (which) {
+            case "like" -> Datasource.getConnection().prepareStatement(GET_LIKES_SQL);
+            case "dislike" -> Datasource.getConnection().prepareStatement(GET_DISLIKES_SQL);
+            case "view" -> Datasource.getConnection().prepareStatement(GET_VIEWS_SQL);
+            case "retweet" -> Datasource.getConnection().prepareStatement(GET_RETWEETS_SQL);
+            default -> null;
+        };
+        if (statement != null) {
             statement.setLong(1, id);
+            statement.execute();
             return getIds(statement);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
+        return null;
     }
 
-
-    private static List<Long> getDislikesOfTweet(long id) {
-        try (var statement = Datasource.getConnection().prepareStatement(GET_DISLIKES_SQL)) {
-            statement.setLong(1, id);
-            return getIds(statement);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static List<Long> getLikesOfTweet(long id) {
-        try (var statement = Datasource.getConnection().prepareStatement(GET_LIKES_SQL)) {
-            statement.setLong(1, id);
-            return getIds(statement);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     private static List<Long> getIds(PreparedStatement statement) throws SQLException {
         ResultSet resultSet = statement.executeQuery();
@@ -340,6 +342,13 @@ public class TweetRepositoryImp implements TweetRepository {
             statement.setLong(2, userId);
             statement.executeUpdate();
         }
+    }
+
+    public void setRetweet(long tweetId) throws SQLException {
+       try(var statement = Datasource.getConnection().prepareStatement(SET_TWEETED_SQL)){
+           statement.setLong(1, tweetId);
+           statement.executeUpdate();
+       }
     }
 }
 

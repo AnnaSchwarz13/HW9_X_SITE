@@ -9,5 +9,5 @@ public interface TweetService {
     Tweet addTweet() throws SQLException;
     void showTweetList(List<Tweet> tweets) throws SQLException;
     void changeDetailsOfTweet(Tweet choosenTweet) throws SQLException;
-    void displayTweet(Tweet choosenTweet);
+    void displayTweet(Tweet choosenTweet) throws SQLException;
 }

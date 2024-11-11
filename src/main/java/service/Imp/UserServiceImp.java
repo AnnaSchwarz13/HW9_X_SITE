@@ -11,11 +11,12 @@ public class UserServiceImp implements UserService {
 
     UserRepositoryImp userRepositoryImp = new UserRepositoryImp();
     AuthenticationServiceImp authenticationServiceImp = new AuthenticationServiceImp();
+    AuthenticationServiceImp.PasswordAuthentication passwordAuthenticationImp = new AuthenticationServiceImp.PasswordAuthentication();
     static Scanner scanner = new Scanner(System.in);
 
     @Override
     public void userSignup(String username, String password, String email, String bio, String displayName) throws SQLException {
-        User signingUser = new User(username, password, displayName, email, bio);
+        User signingUser = new User(username, passwordAuthenticationImp.hash(password.toCharArray()), displayName, email, bio);
         userRepositoryImp.create(signingUser);
         System.out.println("Author signed up successfully");
     }
@@ -26,7 +27,7 @@ public class UserServiceImp implements UserService {
         if (userRepositoryImp.all() != null) {
             for (User checkingUser : userRepositoryImp.all()) {
                 if (checkingUser.getUsername().equals(username)) {
-                    if (checkingUser.getPassword().equals(password)) {
+                    if (passwordAuthenticationImp.authenticate(password.toCharArray(),checkingUser.getPassword())) {
                         authenticationServiceImp.setLoggedUser(userRepositoryImp.findByUsername(username));
                         System.out.println("User logged in successfully...");
                         return;

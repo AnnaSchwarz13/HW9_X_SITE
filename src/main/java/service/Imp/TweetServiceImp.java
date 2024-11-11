@@ -11,16 +11,16 @@ import java.util.List;
 import java.util.Scanner;
 
 public class TweetServiceImp implements TweetService {
-    TweetRepositoryImp tweetRepositoryImp = new TweetRepositoryImp();
+    static TweetRepositoryImp tweetRepositoryImp = new TweetRepositoryImp();
     TagRepositoryImp tagRepositoryImp = new TagRepositoryImp();
     TagServiceImp tagServiceImp = new TagServiceImp();
-    AuthenticationServiceImp authenticationServiceImp = new AuthenticationServiceImp();
+    static AuthenticationServiceImp authenticationServiceImp = new AuthenticationServiceImp();
     Scanner sc = new Scanner(System.in);
 
     @Override
     public Tweet addTweet() throws SQLException {
         System.out.println("Enter tweet text: ");
-        String tweetText = sc.nextLine();
+        String tweetText = sc.nextLine() + sc.nextLine();
         List<Tag> brief = tagServiceImp.setArticleTags();
         Tweet tweet = new Tweet(authenticationServiceImp.getLoggedUser(), tweetText);
         tweet = tweetRepositoryImp.create(tweet);
@@ -39,11 +39,7 @@ public class TweetServiceImp implements TweetService {
 
                 for (Tweet tempTweet : tweets) {
                     displayTweet(tempTweet);
-                    if (!tempTweet.getViews_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
-                        tweetRepositoryImp.updateActions(tempTweet.getId()
-                                , authenticationServiceImp.getLoggedUser().getId(), "view");
-                        tempTweet.getViews_ids().add(authenticationServiceImp.getLoggedUser().getId());
-                    }
+
                 }
 
                 long id = sc.nextLong();
@@ -63,6 +59,7 @@ public class TweetServiceImp implements TweetService {
                             TweetRepositoryImp.read(id).getLikes_ids().add(authenticationServiceImp.getLoggedUser().getId());
                             if (TweetRepositoryImp.read(id).getDislikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())){
                                 tweetRepositoryImp.deleteActions(id,authenticationServiceImp.getLoggedUser().getId(),"dislike");
+                                System.out.println("liked!");
                             }
                         } else {
                             System.out.println("You are already liked!");
@@ -74,6 +71,7 @@ public class TweetServiceImp implements TweetService {
                             TweetRepositoryImp.read(id).getDislikes_ids().add(authenticationServiceImp.getLoggedUser().getId());
                             if (TweetRepositoryImp.read(id).getLikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())){
                                 tweetRepositoryImp.deleteActions(id,authenticationServiceImp.getLoggedUser().getId(),"like");
+                                System.out.println("disliked!");
                             }
                         } else {
                             System.out.println("You are already disliked!");
@@ -84,7 +82,9 @@ public class TweetServiceImp implements TweetService {
                         Tweet tweet = addTweet();
                             tweetRepositoryImp.updateActions(TweetRepositoryImp.read(id).getId()
                                     , tweet.getId(), "retweet");
-                            TweetRepositoryImp.read(id).getRetweets().add(tweet);
+                            TweetRepositoryImp.read(id).getRetweets().add(tweet.getId());
+                            tweetRepositoryImp.setRetweet(tweet.getId());
+                        System.out.println("retweeted!");
                     }
                 } else {
                     System.out.println("wrong id");
@@ -163,15 +163,54 @@ public class TweetServiceImp implements TweetService {
     }
 
     @Override
-    public void displayTweet(Tweet choosenTweet) {
-        System.out.println(choosenTweet.getUser().getDisplayName());
-        System.out.println("tweeted at  " + choosenTweet.getCreateDate());
-        System.out.println("\n" + choosenTweet.getContent());
-        if (choosenTweet.getBrief() != null) {
-            System.out.println("\n brief: " + choosenTweet.getBrief());
-        }
-        System.out.println("tweet id: " + choosenTweet.getId());
+    public void displayTweet(Tweet choosenTweet) throws SQLException {
+        if (!choosenTweet.isRetweeted()) {
+            System.out.println(choosenTweet.getUser().getDisplayName());
+            System.out.println("Tweet at  " + choosenTweet.getCreateDate());
+            System.out.println("\n" + choosenTweet.getContent());
+            if (choosenTweet.getBrief() != null) {
+                System.out.println("\n brief: " + choosenTweet.getBrief());
+            }
+            System.out.println("likes: " + choosenTweet.getLikes_ids().size());
+            System.out.println("dislikes: " + choosenTweet.getDislikes_ids().size());
+            System.out.println("tweet id: " + choosenTweet.getId());
+            System.out.println("viewed " + choosenTweet.getViews_ids().size() + " times");
 
+            addView(choosenTweet);
+        }
+
+
+    }
+    public static void displayRetweet (Tweet choosenTweet) throws SQLException {
+        if(choosenTweet.isRetweeted()) {
+            System.out.println("\tRetweeted at  " + choosenTweet.getCreateDate());
+            System.out.println("\t"+choosenTweet.getUser().getDisplayName());
+            System.out.println("\tTweet at  " + choosenTweet.getCreateDate());
+            System.out.println("\n\t" + choosenTweet.getContent());
+            if (choosenTweet.getBrief() != null) {
+                System.out.println("\n\t brief: " + choosenTweet.getBrief());
+            }
+            System.out.println("\tlikes: "+choosenTweet.getLikes_ids().size());
+            System.out.println("\tdislikes: "+choosenTweet.getDislikes_ids().size());
+            System.out.println("\ttweet id: " + choosenTweet.getId());
+            System.out.println("\tviewed " + choosenTweet.getViews_ids().size() + " times");
+        }
+        addView(choosenTweet);
+
+    }
+
+    private static void addView(Tweet choosenTweet) throws SQLException {
+        if (!choosenTweet.getViews_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
+            tweetRepositoryImp.updateActions(choosenTweet.getId()
+                    , authenticationServiceImp.getLoggedUser().getId(), "view");
+            choosenTweet.getViews_ids().add(authenticationServiceImp.getLoggedUser().getId());
+        }
+        if (!choosenTweet.getRetweets().isEmpty()) {
+            for (Long retweet : choosenTweet.getRetweets()) {
+                System.out.println("\n\treplayed to tweetId " + choosenTweet.getId());
+                displayRetweet(TweetRepositoryImp.read(retweet));
+            }
+        }
     }
 
 }
