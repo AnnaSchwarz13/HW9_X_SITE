@@ -102,6 +102,26 @@ public class TweetRepositoryImp implements TweetRepository {
              DELETE FROM retweets_tweet
              WHERE tweet_id = ? and retweet_id = ?
             """;
+    private static final String DELETE_VIEW_SQL = """
+             DELETE FROM views_tweet
+             WHERE tweet_id = ? and view_id = ?
+            """;
+    private static final String DELETE_ALL_view_SQL = """
+             DELETE FROM views_tweet
+             WHERE tweet_id = ?
+            """;
+    private static final String DELETE_ALL_LIKE_SQL = """
+             DELETE FROM LIKES_tweet
+             WHERE tweet_id = ?
+            """;
+    private static final String DELETE_ALL_DISLIKE_SQL = """
+             DELETE FROM disLIKES_tweet
+             WHERE tweet_id = ?
+            """;
+    private static final String DELETE_ALL_RETWEET_SQL = """
+             DELETE FROM retweets_tweet
+             WHERE tweet_id = ?
+            """;
 
 
     public static Tweet read(long id) throws SQLException {
@@ -148,21 +168,27 @@ public class TweetRepositoryImp implements TweetRepository {
             System.out.println("# of Contacts deleted: " + affectedRows);
         }
     }
+
     @Override
     public void deleteActions(long tweetId, long userId, String which) throws SQLException {
+        actionChoose(tweetId, userId, which, DELETE_LIKE_SQL, DELETE_DISLIKE_SQL, DELETE_VIEW_SQL, DELETE_RETWEET_SQL);
+    }
+
+    public void deleteRecords(long tweetId, String which) throws SQLException {
         PreparedStatement statement = switch (which) {
-            case "like" -> Datasource.getConnection().prepareStatement(DELETE_LIKE_SQL);
-            case "dislike" -> Datasource.getConnection().prepareStatement(DELETE_DISLIKE_SQL);
+            case "like" -> Datasource.getConnection().prepareStatement(DELETE_ALL_LIKE_SQL);
+            case "dislike" -> Datasource.getConnection().prepareStatement(DELETE_ALL_DISLIKE_SQL);
+            case "view" -> Datasource.getConnection().prepareStatement(DELETE_ALL_view_SQL);
             case "retweet" -> Datasource.getConnection().prepareStatement(DELETE_RETWEET_SQL);
             default -> null;
         };
 
         if (statement != null) {
             statement.setLong(1, tweetId);
-            statement.setLong(2, userId);
             statement.executeUpdate();
         }
     }
+
 
     @Override
     public List<Tweet> getTweetsOfAUser(User user) {
@@ -193,7 +219,6 @@ public class TweetRepositoryImp implements TweetRepository {
         return new ArrayList<>(publishedTweets);
     }
 
-
     //update details
 
     @Override
@@ -207,19 +232,7 @@ public class TweetRepositoryImp implements TweetRepository {
 
     @Override
     public void updateActions(long tweetId, long userId, String which) throws SQLException {
-        PreparedStatement statement = switch (which) {
-            case "like" -> Datasource.getConnection().prepareStatement(INSERT_like_SQL);
-            case "dislike" -> Datasource.getConnection().prepareStatement(INSERT_dislike_SQL);
-            case "view" -> Datasource.getConnection().prepareStatement(INSERT_view_SQL);
-            case "retweet" -> Datasource.getConnection().prepareStatement(INSERT_retweet_SQL);
-            default -> null;
-        };
-
-        if (statement != null) {
-            statement.setLong(1, userId);
-            statement.setLong(2, tweetId);
-            statement.executeUpdate();
-        }
+        actionChoose(userId, tweetId, which, INSERT_like_SQL, INSERT_dislike_SQL, INSERT_view_SQL, INSERT_retweet_SQL);
     }
 
 
@@ -290,7 +303,8 @@ public class TweetRepositoryImp implements TweetRepository {
         }
         return new ArrayList<>(ids);
     }
-@Override
+
+    @Override
     public boolean isUserIn(long tweetId, long userId, String which) throws SQLException {
         PreparedStatement statement = switch (which) {
             case "like" -> Datasource.getConnection().prepareStatement(is_user_liked);
@@ -302,16 +316,30 @@ public class TweetRepositoryImp implements TweetRepository {
         if (statement != null) {
             statement.setLong(1, tweetId);
             statement.setLong(2, userId);
-           ResultSet resultSet = statement.executeQuery();
+            ResultSet resultSet = statement.executeQuery();
             long id = 0;
             if (resultSet.next()) {
                 id = resultSet.getLong(1);
             }
-            return id!=0;
+            return id != 0;
         }
         return false;
     }
+
+    private void actionChoose(long tweetId, long userId, String which, String deleteLikeSql, String deleteDislikeSql, String deleteViewSql, String deleteRetweetSql) throws SQLException {
+        PreparedStatement statement = switch (which) {
+            case "like" -> Datasource.getConnection().prepareStatement(deleteLikeSql);
+            case "dislike" -> Datasource.getConnection().prepareStatement(deleteDislikeSql);
+            case "view" -> Datasource.getConnection().prepareStatement(deleteViewSql);
+            case "retweet" -> Datasource.getConnection().prepareStatement(deleteRetweetSql);
+            default -> null;
+        };
+
+        if (statement != null) {
+            statement.setLong(1, tweetId);
+            statement.setLong(2, userId);
+            statement.executeUpdate();
+        }
+    }
 }
-
-
 

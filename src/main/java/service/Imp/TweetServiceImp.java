@@ -100,7 +100,7 @@ public class TweetServiceImp implements TweetService {
         System.out.println("""
                         1.Edit content
                         2.Edit TagList\s
-                        //delete
+                        3.delete
                 """
         );
         int choose = sc.nextInt();
@@ -139,6 +139,25 @@ public class TweetServiceImp implements TweetService {
                     break;
                 }
             }
+        }
+        else if(choose == 3){
+            System.out.println("Warning!\nthis is your tweet it will be removed \nwith all like and e.x.");
+            displayTweet(choosenTweet);
+            System.out.println("""
+                    1.CONFIRM
+                    2.REJECT""");
+            int action = sc.nextInt();
+            if (action == 1) {
+                tweetRepositoryImp.deleteRecords(choosenTweet.getId(),"like");
+                tweetRepositoryImp.deleteRecords(choosenTweet.getId(),"dislike");
+                tweetRepositoryImp.deleteRecords(choosenTweet.getId(),"retweet");//just records?
+                tweetRepositoryImp.deleteRecords(choosenTweet.getId(),"view");
+                tweetRepositoryImp.delete(choosenTweet.getId());
+            }
+            else if (action == 2) {
+                System.out.println("Action canceled !");
+            }
+
         }
 
     }

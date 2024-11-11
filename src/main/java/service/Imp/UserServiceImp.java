@@ -5,15 +5,17 @@ import repository.Imp.UserRepositoryImp;
 import service.UserService;
 
 import java.sql.SQLException;
+import java.util.Scanner;
 
 public class UserServiceImp implements UserService {
 
     UserRepositoryImp userRepositoryImp = new UserRepositoryImp();
     AuthenticationServiceImp authenticationServiceImp = new AuthenticationServiceImp();
+    static Scanner scanner = new Scanner(System.in);
 
     @Override
-    public void userSignup(String username, String password,  String email ,String bio, String displayName) throws SQLException {
-        User signingUser = new User(username,password,displayName,email,bio);
+    public void userSignup(String username, String password, String email, String bio, String displayName) throws SQLException {
+        User signingUser = new User(username, password, displayName, email, bio);
         userRepositoryImp.create(signingUser);
         System.out.println("Author signed up successfully");
     }
@@ -36,6 +38,7 @@ public class UserServiceImp implements UserService {
         }
         System.out.println("Username or password is wrong!");
     }
+
     @Override
     public void userLoginEmail(String email, String password) throws SQLException {
         if (userRepositoryImp.all() != null) {
@@ -59,8 +62,8 @@ public class UserServiceImp implements UserService {
         authenticationServiceImp.logout();
     }
 
-    @Override
-    public void changePassword(String oldPassword, String newPassword) throws SQLException {
+
+    private void changePassword(String oldPassword, String newPassword) throws SQLException {
         if (authenticationServiceImp.getLoggedUser().getPassword().equals(oldPassword)) {
             userRepositoryImp.setUpdatePassword(UserRepositoryImp.read(authenticationServiceImp.getLoggedUser().getId()), newPassword);
             System.out.println("Password changed successfully");
@@ -69,8 +72,68 @@ public class UserServiceImp implements UserService {
         System.out.println("Wrong password");
     }
 
-    @Override
-    public void changeProfile() {
+    private void changeUsername(String oldUsername, String newUsername) throws SQLException {
+        if (authenticationServiceImp.getLoggedUser().getUsername().equals(oldUsername)) {
+            if (authenticationServiceImp.isUsernameNew(newUsername)) {
+                userRepositoryImp.updateProfile(authenticationServiceImp.getLoggedUser(), newUsername, "username");
+                System.out.println("Username changed successfully");
+                return;
+            }
+            System.out.println("this username is already in use");
+        }
+        System.out.println("Wrong username");
+    }
 
+    private void changeEmail(String oldEmail, String newEmail) throws SQLException {
+        if (authenticationServiceImp.getLoggedUser().getEmail().equals(oldEmail)) {
+            if (authenticationServiceImp.isEmailNew(newEmail)) {
+                userRepositoryImp.updateProfile(authenticationServiceImp.getLoggedUser(), newEmail, "email");
+                System.out.println("Email changed successfully");
+                return;
+            }
+            System.out.println("this email is already in use");
+        }
+        System.out.println("Wrong email");
+    }
+
+
+    @Override
+    public void changeProfile() throws SQLException {
+        System.out.println("Select to change");
+        System.out.println("""
+                1.Username
+                2.Email
+                3.Password
+                4.DisplayName
+                5.Bio""");
+        int option = scanner.nextInt();
+
+        if (option == 1) {
+            System.out.println("Enter old Username");
+            String username = scanner.next();
+            System.out.println("Enter new username");
+            String newUsername = scanner.next();
+            changeUsername(username,newUsername);
+        } else if (option == 2) {
+            System.out.println("Enter old email");
+            String oldEmail = scanner.next();
+            System.out.println("Enter new email");
+            String newEmail = scanner.next();
+            changeEmail(oldEmail,newEmail);
+        } else if (option == 3) {
+            System.out.println("Enter old password");
+            String oldPassword = scanner.next();
+            System.out.println("Enter new password");
+            String newPassword = scanner.next();
+            changePassword(oldPassword,newPassword);
+        } else if (option == 4) {
+            System.out.println("Enter new DisplayName");
+            String newDisplayName = scanner.next();
+            userRepositoryImp.updateProfile(authenticationServiceImp.getLoggedUser(), newDisplayName, "displayName");
+        } else if (option == 5) {
+            System.out.println("Enter new Bio");
+            String newBio = scanner.next();
+            userRepositoryImp.updateProfile(authenticationServiceImp.getLoggedUser(), newBio, "bio");
+        }
     }
 }

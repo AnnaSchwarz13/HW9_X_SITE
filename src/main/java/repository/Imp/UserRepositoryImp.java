@@ -5,6 +5,7 @@ import repository.Datasource;
 import repository.UserRepository;
 
 import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -26,7 +27,27 @@ public class UserRepositoryImp implements UserRepository {
     private static final String UPDATE_PASSWORD_SQL = """
             UPDATE x_site_users
             SET password = ?
-            WHERE username = ?
+            WHERE id = ?
+            """;
+    private static final String UPDATE_USERNAME_SQL = """
+            UPDATE x_site_users
+            SET username = ?
+            WHERE id = ?
+            """;
+    private static final String UPDATE_EMAIL_SQL = """
+            UPDATE x_site_users
+            SET email = ?
+            WHERE id = ?
+            """;
+    private static final String UPDATE_BIO_SQL = """
+            UPDATE x_site_users
+            SET bio = ?
+            WHERE id = ?
+            """;
+    private static final String UPDATE_DISPLAY_NAME_SQL = """
+            UPDATE x_site_users
+            SET display_name = ?
+            WHERE id = ?
             """;
     private static final String FIND_ID_BY_USERNAME_SQL = """
             SELECT id FROM x_site_users
@@ -79,6 +100,22 @@ public class UserRepositoryImp implements UserRepository {
     public void setUpdatePassword(User user, String password) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(UPDATE_PASSWORD_SQL)) {
             statement.setString(1, password);
+            statement.setString(2, user.getUsername());
+            statement.executeUpdate();
+        }
+    }
+
+    public void updateProfile(User user, String newContent , String which) throws SQLException {
+        PreparedStatement statement = switch (which) {
+            case "bio" -> Datasource.getConnection().prepareStatement(UPDATE_BIO_SQL);
+            case "displayName" -> Datasource.getConnection().prepareStatement(UPDATE_DISPLAY_NAME_SQL);
+            case "email" -> Datasource.getConnection().prepareStatement(UPDATE_EMAIL_SQL);
+            case "username" -> Datasource.getConnection().prepareStatement(UPDATE_USERNAME_SQL);
+            default -> null;
+        };
+
+        if (statement != null) {
+            statement.setString(1, newContent);
             statement.setString(2, user.getUsername());
             statement.executeUpdate();
         }
