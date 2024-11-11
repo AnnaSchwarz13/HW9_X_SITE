@@ -16,8 +16,8 @@ public class TweetRepositoryImp implements TweetRepository {
     static TagRepositoryImp tagRepositoryImp = new TagRepositoryImp();
     //SQL
     private static final String INSERT_SQL = """
-             INSERT INTO tweets(text,created_date ,user_id ,views, likes,dislikes)
-             VALUES (?, ? ,? ,default,default ,default)
+             INSERT INTO tweets(text,created_date ,user_id )
+             VALUES (?, ? ,? )
             """;
 
     private static final String DELETE_BY_ID_SQL = """
@@ -37,11 +37,11 @@ public class TweetRepositoryImp implements TweetRepository {
             """;
     public static final String FIND_ALL_AUTHOR_ARTICLES_SQL = """
             SELECT * FROM tweets
-            WHERE author_id = ?
+            WHERE user_id = ?
             """;
     public static final String UPDATE_TEXT_SQL = """
             UPDATE tweets
-            SET text = ? , last_updated_date = ?
+            SET text = ?
             WHERE id = ?
             """;
     public static final String GET_LAST_INDEX = """
@@ -200,8 +200,7 @@ public class TweetRepositoryImp implements TweetRepository {
     public void updateText(Tweet tweet, String newValue) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(UPDATE_TEXT_SQL)) {
             statement.setString(1, newValue);
-            statement.setDate(2, Date.valueOf(LocalDate.now()));
-            statement.setLong(3, tweet.getId());
+            statement.setLong(2, tweet.getId());
             statement.executeUpdate();
         }
     }

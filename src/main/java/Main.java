@@ -22,7 +22,7 @@ public static void main(String[] args) throws SQLException {
             System.out.println("""
                     1.login with username
                     2.login with email
-                    2.singUp""");
+                    3.singUp""");
             int option = scanner.nextInt();
             loginMenu(option);
         }

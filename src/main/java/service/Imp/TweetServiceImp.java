@@ -25,6 +25,7 @@ public class TweetServiceImp implements TweetService {
         Tweet tweet = new Tweet(authenticationServiceImp.getLoggedUser(), tweetText);
         tweet = tweetRepositoryImp.create(tweet);
         tagRepositoryImp.setTweetTag(brief, tweet);
+        System.out.println("Tweeted!!");
         return tweet;
     }
 
@@ -99,6 +100,7 @@ public class TweetServiceImp implements TweetService {
         System.out.println("""
                         1.Edit content
                         2.Edit TagList\s
+                        //delete
                 """
         );
         int choose = sc.nextInt();

@@ -16,8 +16,8 @@ public class TagRepositoryImp implements TagRepository {
             "INSERT INTO Tags(title) VALUES (?)";
 
     private static final String DELETE_BY_ARTICLE_ID_SQL = """
-            DELETE FROM Tags_articles
-            WHERE article_id = ?
+            DELETE FROM Tags_tweets
+            WHERE tweet_id = ?
             """;
 
     private static final String FIND_BY_ID_SQL = """
@@ -36,11 +36,11 @@ public class TagRepositoryImp implements TagRepository {
             WHERE title = ?
             """;
     public static final String FIND_ARTICLES_TAG = """
-            SELECT tag_id FROM Tags_articles
-            WHERE article_id = ?
+            SELECT tag_id FROM Tags_tweets
+            WHERE tweet_id = ?
             """;
     public static final String INSET_ARTICLES_TAGS = """
-            INSERT INTO Tags_articles(article_id, tag_id) VALUES (?, ?)
+            INSERT INTO Tags_tweets(tweet_id, tag_id) VALUES (?, ?)
             """;
 
 
