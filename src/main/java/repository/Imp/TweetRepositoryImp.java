@@ -62,6 +62,30 @@ public class TweetRepositoryImp implements TweetRepository {
             SELECT view_id FROM views_tweet
             WHERE tweet_id = ?
             """;
+    public static final String is_user_liked = """
+            SELECT * FROM likes_tweet
+            WHERE tweet_id = ? AND like_id = ?
+            """;
+    public static final String is_user_disliked = """
+            SELECT * FROM dislikes_tweet
+            WHERE tweet_id = ? AND dislike_id = ?
+            """;
+    public static final String is_user_viewed = """
+            SELECT * FROM views_tweet
+            WHERE tweet_id = ? AND view_id=?
+            """;
+    private static final String INSERT_like_SQL = """
+             INSERT INTO likes_tweet(like_id,tweet_id)
+             VALUES (?, ?)
+            """;
+    private static final String INSERT_dislike_SQL = """
+             INSERT INTO dislikes_tweet(dislike_id,tweet_id)
+             VALUES (?, ?)
+            """;
+    private static final String INSERT_view_SQL = """
+             INSERT INTO views_tweet(view_id,tweet_id)
+             VALUES (?, ?)
+            """;
 
     public static Tweet read(long id) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(FIND_BY_ID_SQL)) {
@@ -117,6 +141,7 @@ public class TweetRepositoryImp implements TweetRepository {
             throw new RuntimeException(e);
         }
     }
+
     @Override
     public List<Tweet> all() {
         try (var statement = Datasource.getConnection().prepareStatement(ALL_TWEETS)) {
@@ -145,6 +170,21 @@ public class TweetRepositoryImp implements TweetRepository {
             statement.setString(1, newValue);
             statement.setDate(2, Date.valueOf(LocalDate.now()));
             statement.setLong(3, tweet.getId());
+            statement.executeUpdate();
+        }
+    }
+
+    public void updateActions(long tweetId, long userId, String which) throws SQLException {
+        PreparedStatement statement = switch (which) {
+            case "like" -> Datasource.getConnection().prepareStatement(INSERT_like_SQL);
+            case "dislike" -> Datasource.getConnection().prepareStatement(INSERT_dislike_SQL);
+            case "view" -> Datasource.getConnection().prepareStatement(INSERT_view_SQL);
+            default -> null;
+        };
+
+        if (statement != null) {
+            statement.setLong(1, userId);
+            statement.setLong(2, tweetId);
             statement.executeUpdate();
         }
     }
@@ -199,7 +239,7 @@ public class TweetRepositoryImp implements TweetRepository {
         }
     }
 
-    private static  List<Long> getLikesOfTweet(long id) {
+    private static List<Long> getLikesOfTweet(long id) {
         try (var statement = Datasource.getConnection().prepareStatement(GET_LIKES_SQL)) {
             statement.setLong(1, id);
             return getIds(statement);
@@ -216,6 +256,27 @@ public class TweetRepositoryImp implements TweetRepository {
             ids.add(id);
         }
         return new ArrayList<>(ids);
+    }
+@Override
+    public boolean isUserIn(long tweetId, long userId, String which) throws SQLException {
+        PreparedStatement statement = switch (which) {
+            case "like" -> Datasource.getConnection().prepareStatement(is_user_liked);
+            case "dislike" -> Datasource.getConnection().prepareStatement(is_user_disliked);
+            case "view" -> Datasource.getConnection().prepareStatement(is_user_viewed);
+            default -> null;
+        };
+
+        if (statement != null) {
+            statement.setLong(1, tweetId);
+            statement.setLong(2, userId);
+           ResultSet resultSet = statement.executeQuery();
+            long id = 0;
+            if (resultSet.next()) {
+                id = resultSet.getLong(1);
+            }
+            return id!=0;
+        }
+        return false;
     }
 }
 

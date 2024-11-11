@@ -37,7 +37,9 @@ public class TweetServiceImp implements TweetService {
 
                 for (Tweet tempTweet : tweets) {
                     displayTweet(tempTweet);
-                    //add to view
+                    if(!tempTweet.getViews_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
+                        tweetRepositoryImp.updateActions(tempTweet.getId(),authenticationServiceImp.getLoggedUser().getId(),"view");
+                    }
                 }
 
                 long id = sc.nextLong();

@@ -19,5 +19,7 @@ public interface TweetRepository {
 
     List<Tweet> all();
 
+    boolean isUserIn(long tweetId, long userId, String which) throws SQLException;
+
 
 }
