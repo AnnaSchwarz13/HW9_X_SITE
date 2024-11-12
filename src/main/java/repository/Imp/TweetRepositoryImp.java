@@ -111,6 +111,10 @@ public class TweetRepositoryImp implements TweetRepository {
              DELETE FROM retweet_tweets
              WHERE tweet_id = ?
             """;
+    private static final String DELETE_ALL_RETWEET_REL_SQL = """
+             DELETE FROM retweet_tweets
+             WHERE retweet_id = ?
+            """;
     private static final String SET_TWEETED_SQL = """
             UPDATE tweets
             SET isretweeted = true
@@ -185,6 +189,7 @@ public class TweetRepositoryImp implements TweetRepository {
             case "dislike" -> Datasource.getConnection().prepareStatement(DELETE_ALL_DISLIKE_SQL);
             case "view" -> Datasource.getConnection().prepareStatement(DELETE_ALL_view_SQL);
             case "retweet" -> Datasource.getConnection().prepareStatement(DELETE_ALL_RETWEET_SQL);
+            case "tweet" -> Datasource.getConnection().prepareStatement(DELETE_ALL_RETWEET_REL_SQL);
             default -> null;
         };
 

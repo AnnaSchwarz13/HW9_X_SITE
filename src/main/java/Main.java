@@ -14,7 +14,7 @@ static UserServiceImp userService = new UserServiceImp();
 static TweetService tweetService = new TweetServiceImp();
 static Scanner scanner = new Scanner(System.in);
 
-public static void main(String[] args) throws SQLException{
+public static void main(String[] args) throws SQLException {
 
     while (true) {
 
@@ -62,12 +62,12 @@ public static void loginMenu(int option) throws SQLException {
         while (true) {
             System.out.println("enter your username:");
             String username = scanner.next();
-            if(authenticationService.isUsernameNew(username)) {
+            if (authenticationService.isUsernameNew(username)) {
                 System.out.println("enter your password:");
                 String password = scanner.next();
                 while (true) {
-                System.out.println("enter your email :");
-                String email = scanner.next();
+                    System.out.println("enter your email :");
+                    String email = scanner.next();
                     if (authenticationService.isEmailNew(email)) {
                         System.out.println("enter your Bio :");
                         String bio = scanner.next();
@@ -93,13 +93,17 @@ public static void xSiteMenu(int option) throws SQLException {
     } else if (option == 3) {
         System.out.println("there is your tweets enter id to edite");
         for (Tweet tweet : tweetRepositoryImp.getTweetsOfAUser(authenticationService.getLoggedUser())) {
-            tweetService.displayTweet(tweet);
+            if (!tweet.isRetweeted())
+                tweetService.displayTweet(tweet);
+            else {
+                System.out.println("---------");
+                TweetServiceImp.displayRetweet(tweet);
+            }
         }
         long id = scanner.nextLong();
-        if(TweetRepositoryImp.read(id).getUser().getId() ==authenticationService.getLoggedUser().getId()) {
+        if (TweetRepositoryImp.read(id).getUser().getId() == authenticationService.getLoggedUser().getId()) {
             tweetService.changeDetailsOfTweet(TweetRepositoryImp.read(id));
-        }
-        else {
+        } else {
             System.out.println("Wrong id");
         }
     } else if (option == 4) {

@@ -45,10 +45,10 @@ public class UserServiceImp implements UserService {
         if (userRepositoryImp.all() != null) {
             for (User checkingUser : userRepositoryImp.all()) {
                 if (checkingUser.getEmail().equals(email)) {
-                    if (checkingUser.getPassword().equals(password)) {
-                        authenticationServiceImp.setLoggedUser(userRepositoryImp.findByUsername(checkingUser.getUsername()));
-                        System.out.println("User logged in successfully...");
-                        return;
+                        if (passwordAuthenticationImp.authenticate(password.toCharArray(),checkingUser.getPassword())) {
+                            authenticationServiceImp.setLoggedUser(userRepositoryImp.findByUsername(checkingUser.getUsername()));
+                            System.out.println("User logged in successfully...");
+                            return;
 
                     }
                     break;

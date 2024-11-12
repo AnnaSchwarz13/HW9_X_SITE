@@ -142,7 +142,12 @@ public class TweetServiceImp implements TweetService {
             }
         } else if (choose == 3) {
             System.out.println("Warning!\nthis is your tweet it will be removed \nwith all like and e.x.");
-            displayTweet(choosenTweet);
+            if (!choosenTweet.isRetweeted())
+                displayTweet(choosenTweet);
+            else {
+                System.out.println("---------");
+                displayRetweet(choosenTweet);
+            }
             System.out.println("""
                     1.CONFIRM
                     2.REJECT""");
@@ -160,10 +165,11 @@ public class TweetServiceImp implements TweetService {
     @Override
     public void displayTweet(Tweet choosenTweet) throws SQLException {
         if (!choosenTweet.isRetweeted()) {
+            System.out.println("---------");
             System.out.println(choosenTweet.getUser().getDisplayName());
             System.out.println("Tweet at  " + choosenTweet.getCreateDate());
             System.out.println("\n" + choosenTweet.getContent());
-            if (choosenTweet.getBrief() != null) {
+            if (!choosenTweet.getBrief().isEmpty()) {
                 System.out.println("\n brief: " + choosenTweet.getBrief());
             }
             System.out.print("likes: " + choosenTweet.getLikes_ids().size());
@@ -182,7 +188,7 @@ public class TweetServiceImp implements TweetService {
             System.out.println("\tRetweeted at  " + choosenTweet.getCreateDate());
             System.out.println("\t" + choosenTweet.getUser().getDisplayName());
             System.out.println("\n\t" + choosenTweet.getContent());
-            if (choosenTweet.getBrief() != null) {
+            if (!choosenTweet.getBrief().isEmpty()) {
                 System.out.println("\n\t brief: " + choosenTweet.getBrief());
             }
             System.out.print("\tlikes: " + choosenTweet.getLikes_ids().size());
@@ -219,6 +225,9 @@ public class TweetServiceImp implements TweetService {
         tweetRepositoryImp.deleteRecords(tweet.getId(), "dislike");
         tweetRepositoryImp.deleteRecords(tweet.getId(), "view");
         tagRepositoryImp.delete(tweet.getId());
+        if(tweet.isRetweeted()) {
+            tweetRepositoryImp.deleteRecords(tweet.getId(), "tweet");
+        }
         tweetRepositoryImp.delete(tweet.getId());
     }
 
