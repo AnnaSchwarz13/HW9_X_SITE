@@ -97,7 +97,7 @@ public static void xSiteMenu(int option) throws SQLException {
                 tweetService.displayTweet(tweet);
             else {
                 System.out.println("---------");
-                TweetServiceImp.displayRetweet(tweet);
+                TweetServiceImp.displayRetweet(tweet , 0);
             }
         }
         long id = scanner.nextLong();

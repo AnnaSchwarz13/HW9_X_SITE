@@ -106,7 +106,7 @@ public class TweetServiceImp implements TweetService {
         if (choose == 1) {
             System.out.println("Please enter the new content:");
             String newText = sc.nextLine() + sc.nextLine();
-            newText = newText +"\n(edited)";
+            newText = newText + "\n(edited)";
             tweetRepositoryImp.updateText(choosenTweet, newText);
             System.out.println("successful!");
 
@@ -145,7 +145,7 @@ public class TweetServiceImp implements TweetService {
                 displayTweet(choosenTweet);
             else {
                 System.out.println("---------");
-                displayRetweet(choosenTweet);
+                displayRetweet(choosenTweet, 0);
             }
             System.out.println("""
                     1.CONFIRM
@@ -182,18 +182,44 @@ public class TweetServiceImp implements TweetService {
 
     }
 
-    public static void displayRetweet(Tweet choosenTweet) throws SQLException {
+    public static void displayRetweet(Tweet choosenTweet, int tabs) throws SQLException {
         if (choosenTweet.isRetweeted()) {
-            System.out.println("\tRetweeted at  " + choosenTweet.getCreateDate());
-            System.out.println("\t" + choosenTweet.getUser().getDisplayName());
-            System.out.println("\n\t" + choosenTweet.getContent());
-            if (!choosenTweet.getBrief().isEmpty()) {
-                System.out.println("\n\t brief: " + choosenTweet.getBrief());
+            System.out.println();
+            for (int i = 0; i < tabs; i++) {
+                System.out.print("\t");
             }
-            System.out.print("\tlikes: " + choosenTweet.getLikes_ids().size());
+            System.out.println("replayed to tweetId " + tweetRepositoryImp.getTweetOfRetweet(choosenTweet).getId());
+            for (int i = 0; i < tabs; i++) {
+                System.out.print("\t");
+            }
+            System.out.println("Retweeted at  " + choosenTweet.getCreateDate());
+            for (int i = 0; i < tabs; i++) {
+                System.out.print("\t");
+            }
+            System.out.println(choosenTweet.getUser().getDisplayName() +"\n");
+            for (int i = 0; i < tabs; i++) {
+                System.out.print("\t");
+            }
+            System.out.println(choosenTweet.getContent()+"\n");
+            if (!choosenTweet.getBrief().isEmpty()) {
+                for (int i = 0; i < tabs; i++) {
+                    System.out.print("\t");
+                }
+                System.out.println("brief: " + choosenTweet.getBrief());
+            }
+            for (int i = 0; i < tabs; i++) {
+                System.out.print("\t");
+            }
+            System.out.print("likes: " + choosenTweet.getLikes_ids().size());
             System.out.println("\tdislikes: " + choosenTweet.getDislikes_ids().size());
-            System.out.println("\ttweet id: " + choosenTweet.getId());
-            System.out.println("\tviewed " + choosenTweet.getViews_ids().size() + " times");
+            for (int i = 0; i < tabs; i++) {
+                System.out.print("\t");
+            }
+            System.out.println("tweet id: " + choosenTweet.getId());
+            for (int i = 0; i < tabs; i++) {
+                System.out.print("\t");
+            }
+            System.out.println("viewed " + choosenTweet.getViews_ids().size() + " times");
         }
         addView(choosenTweet);
 
@@ -207,8 +233,8 @@ public class TweetServiceImp implements TweetService {
         }
         if (!choosenTweet.getRetweets().isEmpty()) {
             for (Long retweet : choosenTweet.getRetweets()) {
-                System.out.println("\n\treplayed to tweetId " + choosenTweet.getId());
-                displayRetweet(TweetRepositoryImp.read(retweet));
+                int tabs = countOfTabs(TweetRepositoryImp.read(retweet));
+                displayRetweet(TweetRepositoryImp.read(retweet), tabs);
             }
         }
     }
@@ -224,23 +250,23 @@ public class TweetServiceImp implements TweetService {
         tweetRepositoryImp.deleteRecords(tweet.getId(), "dislike");
         tweetRepositoryImp.deleteRecords(tweet.getId(), "view");
         tagRepositoryImp.delete(tweet.getId());
-        if(tweet.isRetweeted()) {
+        if (tweet.isRetweeted()) {
             tweetRepositoryImp.deleteRecords(tweet.getId(), "tweet");
         }
         tweetRepositoryImp.delete(tweet.getId());
     }
 
     private static int countOfTabs(Tweet retweet) throws SQLException {
-       int count = 0;
-       while (retweet.isRetweeted()) {
-           count++;
-           if(tweetRepositoryImp.getTweetOfRetweet(retweet).isRetweeted()){
-               count ++;
-               retweet = tweetRepositoryImp.getTweetOfRetweet(retweet);
-           }
-       }
+        int count = 0;
+        while (retweet.isRetweeted()) {
+            count++;
+            if (tweetRepositoryImp.getTweetOfRetweet(retweet).isRetweeted()) {
+                count++;
+            }
+            retweet = tweetRepositoryImp.getTweetOfRetweet(retweet);
+        }
 
-       return count;
+        return count;
     }
 
 }
