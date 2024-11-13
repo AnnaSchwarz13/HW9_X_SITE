@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.Scanner;
 
 public class TweetServiceImp implements TweetService {
-    static TweetRepositoryImp tweetRepositoryImp = new TweetRepositoryImp();
+    TweetRepositoryImp tweetRepositoryImp = new TweetRepositoryImp();
     TagRepositoryImp tagRepositoryImp = new TagRepositoryImp();
     TagServiceImp tagServiceImp = new TagServiceImp();
-    static AuthenticationServiceImp authenticationServiceImp = new AuthenticationServiceImp();
+    AuthenticationServiceImp authenticationServiceImp = new AuthenticationServiceImp();
     Scanner sc = new Scanner(System.in);
 
     @Override
@@ -183,7 +183,8 @@ public class TweetServiceImp implements TweetService {
 
     }
 
-    public static void displayRetweet(Tweet choosenTweet, int tabs) throws SQLException {
+    @Override
+    public void displayRetweet(Tweet choosenTweet, int tabs) throws SQLException {
         if (choosenTweet.isRetweeted()) {
             System.out.println();
             for (int i = 0; i < tabs; i++) {
@@ -226,7 +227,7 @@ public class TweetServiceImp implements TweetService {
 
     }
 
-    private static void addView(Tweet choosenTweet) throws SQLException {
+    private void addView(Tweet choosenTweet) throws SQLException {
         if (!choosenTweet.getViews_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
             tweetRepositoryImp.updateActions(choosenTweet.getId()
                     , authenticationServiceImp.getLoggedUser().getId(), "view");
@@ -257,7 +258,7 @@ public class TweetServiceImp implements TweetService {
         tweetRepositoryImp.delete(tweet.getId());
     }
 
-    private static int countOfTabs(Tweet retweet) throws SQLException {
+    private int countOfTabs(Tweet retweet) throws SQLException {
         int count = 0;
         while (retweet.isRetweeted()) {
             count++;

@@ -15,6 +15,8 @@ public interface TweetService {
 
     void displayTweet(Tweet choosenTweet) throws SQLException;
 
+    void displayRetweet(Tweet choosenTweet, int tabs) throws SQLException;
+
     List<Tweet> getTweetsOfAUser(User user);
 
     Tweet getTweetById(long id) throws SQLException;

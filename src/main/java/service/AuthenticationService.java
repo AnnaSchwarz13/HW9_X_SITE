@@ -15,4 +15,6 @@ public interface AuthenticationService {
     boolean isUsernameNew(String username) throws SQLException;
 
     boolean isEmailNew(String email) throws SQLException;
+
+    boolean isTweetForLoggedInUser(Long id) throws SQLException;
 }

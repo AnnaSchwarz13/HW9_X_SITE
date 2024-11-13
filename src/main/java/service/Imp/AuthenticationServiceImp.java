@@ -1,6 +1,8 @@
 package service.Imp;
 
 import entities.User;
+import repository.Imp.TweetRepositoryImp;
+import repository.Imp.UserRepositoryImp;
 import service.AuthenticationService;
 
 import javax.crypto.SecretKeyFactory;
@@ -15,9 +17,11 @@ import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static repository.Imp.TweetRepositoryImp.userRepositoryImp;
-import static service.Imp.TweetServiceImp.tweetRepositoryImp;
+
+
 public class AuthenticationServiceImp implements AuthenticationService {
+  UserRepositoryImp userRepositoryImp = new UserRepositoryImp();
+  TweetRepositoryImp tweetRepositoryImp = new TweetRepositoryImp();
 
     private static User loggedInUser;
 
@@ -50,6 +54,7 @@ public class AuthenticationServiceImp implements AuthenticationService {
         return !userRepositoryImp.isEmailExist(email);
     }
 
+    @Override
     public boolean isTweetForLoggedInUser(Long id) throws SQLException {
         return tweetRepositoryImp.read(id).getUser().getId() == loggedInUser.getId();
     }
@@ -59,14 +64,9 @@ public class AuthenticationServiceImp implements AuthenticationService {
      * @see <a href="http://stackoverflow.com/a/2861125/3474">StackOverflow</a>
      */
     public static final class PasswordAuthentication {
-        /**
-         * Each token produced by this class uses this identifier as a prefix.
-         */
+
         public static final String ID = "$31$";
 
-        /**
-         * The minimum recommended cost, used by default
-         */
         public static final int DEFAULT_COST = 16;
 
         private static final String ALGORITHM = "PBKDF2WithHmacSHA1";
@@ -83,11 +83,6 @@ public class AuthenticationServiceImp implements AuthenticationService {
             this(DEFAULT_COST);
         }
 
-        /**
-         * Create a password manager with a specified cost
-         *
-         * @param cost the exponential computational cost of hashing a password, 0 to 30
-         */
         public PasswordAuthentication(int cost) {
             iterations(cost); /* Validate cost */
             this.cost = cost;
@@ -100,11 +95,6 @@ public class AuthenticationServiceImp implements AuthenticationService {
             return 1 << cost;
         }
 
-        /**
-         * Hash a password for storage.
-         *
-         * @return a secure authentication token to be stored for later authentication
-         */
         public String hash(char[] password) {
             byte[] salt = new byte[SIZE / 8];
             random.nextBytes(salt);
@@ -116,11 +106,6 @@ public class AuthenticationServiceImp implements AuthenticationService {
             return ID + cost + '$' + enc.encodeToString(hash);
         }
 
-        /**
-         * Authenticate with a password and a stored password token.
-         *
-         * @return true if the password and token match
-         */
         public boolean authenticate(char[] password, String token) {
             Matcher m = layout.matcher(token);
             if (!m.matches())

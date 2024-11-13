@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class TagRepositoryImp implements TagRepository {
+
     private static final String INSERT_SQL =
             "INSERT INTO Tags(title) VALUES (?)";
 
@@ -39,7 +40,7 @@ public class TagRepositoryImp implements TagRepository {
             SELECT tag_id FROM Tags_tweets
             WHERE tweet_id = ?
             """;
-    public static final String INSET_TWEETS_TAGS = """
+    private static final String INSET_TWEETS_TAGS = """
             INSERT INTO Tags_tweets(tweet_id, tag_id) VALUES (?, ?)
             """;
 

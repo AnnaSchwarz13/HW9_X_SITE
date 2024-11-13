@@ -16,7 +16,6 @@ public static void main(String[] args) throws SQLException {
 
     while (true) {
 
-
         while (authenticationService.getLoggedUser() == null) {
             System.out.println("\n\nWelcome to X . . .\n");
             System.out.println("""
@@ -95,7 +94,7 @@ public static void xSiteMenu(int option) throws SQLException {
                 tweetService.displayTweet(tweet);
             else {
                 System.out.println("---------");
-                TweetServiceImp.displayRetweet(tweet , 0);
+                tweetService.displayRetweet(tweet , 0);
             }
         }
         long id = scanner.nextLong();
