@@ -62,6 +62,10 @@ public class TweetRepositoryImp implements TweetRepository {
             SELECT retweet_id FROM retweet_tweets
             WHERE tweet_id = ?
             """;
+    private static final String GET_TWEET_OF_RETWEET_SQL= """
+            SELECT tweet_id FROM retweet_tweets
+            WHERE retweet_id = ?
+            """;
 
     private static final String INSERT_like_SQL = """
              INSERT INTO likes_tweet(like_id,tweet_id)
@@ -303,6 +307,18 @@ public class TweetRepositoryImp implements TweetRepository {
             statement.setLong(1, tweetId);
             statement.setLong(2, userId);
             statement.executeUpdate();
+        }
+    }
+
+    public Tweet getTweetOfRetweet(Tweet retweet) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(GET_TWEET_OF_RETWEET_SQL)){
+            statement.setLong(1, retweet.getId());
+            ResultSet resultSet = statement.executeQuery();
+            Tweet tweet = null;
+            if (resultSet.next()) {
+                tweet = read(resultSet.getLong(1));
+            }
+            return tweet;
         }
     }
 

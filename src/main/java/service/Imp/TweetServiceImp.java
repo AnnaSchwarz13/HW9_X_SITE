@@ -230,4 +230,17 @@ public class TweetServiceImp implements TweetService {
         tweetRepositoryImp.delete(tweet.getId());
     }
 
+    private static int countOfTabs(Tweet retweet) throws SQLException {
+       int count = 0;
+       while (retweet.isRetweeted()) {
+           count++;
+           if(tweetRepositoryImp.getTweetOfRetweet(retweet).isRetweeted()){
+               count ++;
+               retweet = tweetRepositoryImp.getTweetOfRetweet(retweet);
+           }
+       }
+
+       return count;
+    }
+
 }
