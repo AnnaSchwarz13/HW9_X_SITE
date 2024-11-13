@@ -1,5 +1,4 @@
 import entities.Tweet;
-import repository.Imp.TweetRepositoryImp;
 import service.Imp.AuthenticationServiceImp;
 import service.Imp.TweetServiceImp;
 import service.Imp.UserServiceImp;
@@ -8,7 +7,6 @@ import service.TweetService;
 import java.sql.SQLException;
 import java.util.Scanner;
 
-static TweetRepositoryImp tweetRepositoryImp = new TweetRepositoryImp();
 static AuthenticationServiceImp authenticationService = new AuthenticationServiceImp();
 static UserServiceImp userService = new UserServiceImp();
 static TweetService tweetService = new TweetServiceImp();
@@ -87,12 +85,12 @@ public static void loginMenu(int option) throws SQLException {
 
 public static void xSiteMenu(int option) throws SQLException {
     if (option == 1) {
-        tweetService.showTweetList(tweetRepositoryImp.all());
+        tweetService.showTweetList();
     } else if (option == 2) {
         tweetService.addTweet();
     } else if (option == 3) {
         System.out.println("there is your tweets enter id to edite");
-        for (Tweet tweet : tweetRepositoryImp.getTweetsOfAUser(authenticationService.getLoggedUser())) {
+        for (Tweet tweet : tweetService.getTweetsOfAUser(authenticationService.getLoggedUser())) {
             if (!tweet.isRetweeted())
                 tweetService.displayTweet(tweet);
             else {
@@ -101,8 +99,8 @@ public static void xSiteMenu(int option) throws SQLException {
             }
         }
         long id = scanner.nextLong();
-        if (tweetRepositoryImp.read(id).getUser().getId() == authenticationService.getLoggedUser().getId()) {
-            tweetService.changeDetailsOfTweet(tweetRepositoryImp.read(id));
+        if (authenticationService.isTweetForLoggedInUser(id)) {
+            tweetService.changeDetailsOfTweet(tweetService.getTweetById(id));
         } else {
             System.out.println("Wrong id");
         }

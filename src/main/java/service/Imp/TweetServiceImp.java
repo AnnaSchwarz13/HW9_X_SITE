@@ -2,6 +2,7 @@ package service.Imp;
 
 import entities.Tag;
 import entities.Tweet;
+import entities.User;
 import repository.Imp.TagRepositoryImp;
 import repository.Imp.TweetRepositoryImp;
 import service.TweetService;
@@ -30,14 +31,14 @@ public class TweetServiceImp implements TweetService {
     }
 
     @Override
-    public void showTweetList(List<Tweet> tweets) throws SQLException {
-        if (tweets.isEmpty()) {
+    public void showTweetList() throws SQLException {
+        if (getAllTweets().isEmpty()) {
             System.out.println("there is no Tweet");
         } else {
             while (true) {
                 System.out.println("for more action enter tweet's id else -1 ");
 
-                for (Tweet tempTweet : tweets) {
+                for (Tweet tempTweet : getAllTweets()) {
                     displayTweet(tempTweet);
                 }
 
@@ -267,6 +268,20 @@ public class TweetServiceImp implements TweetService {
         }
 
         return count;
+    }
+
+    private List<Tweet> getAllTweets() {
+        return tweetRepositoryImp.all();
+    }
+
+    @Override
+    public List<Tweet> getTweetsOfAUser(User user) {
+        return tweetRepositoryImp.getTweetsOfAUser(user);
+    }
+
+    @Override
+    public Tweet getTweetById(long id) throws SQLException {
+        return tweetRepositoryImp.read(id);
     }
 
 }

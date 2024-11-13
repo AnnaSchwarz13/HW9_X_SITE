@@ -14,7 +14,7 @@ import java.util.List;
 public class TweetRepositoryImp implements TweetRepository {
     //CRUD create read update delete
     static TagRepositoryImp tagRepositoryImp = new TagRepositoryImp();
-    static UserRepositoryImp userRepositoryImp = new UserRepositoryImp();
+    public static UserRepositoryImp userRepositoryImp = new UserRepositoryImp();
     //SQL
     private static final String INSERT_SQL = """
              INSERT INTO tweets(text,created_date ,user_id )

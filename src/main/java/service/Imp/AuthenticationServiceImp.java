@@ -1,7 +1,6 @@
 package service.Imp;
 
 import entities.User;
-import repository.Imp.UserRepositoryImp;
 import service.AuthenticationService;
 
 import javax.crypto.SecretKeyFactory;
@@ -16,8 +15,10 @@ import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static repository.Imp.TweetRepositoryImp.userRepositoryImp;
+import static service.Imp.TweetServiceImp.tweetRepositoryImp;
 public class AuthenticationServiceImp implements AuthenticationService {
-    static UserRepositoryImp userRepositoryImp = new UserRepositoryImp();
+
     private static User loggedInUser;
 
     @Override
@@ -49,6 +50,9 @@ public class AuthenticationServiceImp implements AuthenticationService {
         return !userRepositoryImp.isEmailExist(email);
     }
 
+    public boolean isTweetForLoggedInUser(Long id) throws SQLException {
+        return tweetRepositoryImp.read(id).getUser().getId() == loggedInUser.getId();
+    }
 
     /**
      * @author erickson
