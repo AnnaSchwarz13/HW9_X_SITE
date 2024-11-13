@@ -11,9 +11,13 @@ public interface TweetRepository {
 
     void delete(long id) throws SQLException;
 
+    Tweet read(long id) throws SQLException;
+
     void updateText(Tweet tweet, String newValue) throws SQLException;
 
     List<Tweet> getTweetsOfAUser(User user);
+
+    Tweet getTweetOfRetweet(Tweet retweet) throws SQLException;
 
     List<Tweet> all();
 

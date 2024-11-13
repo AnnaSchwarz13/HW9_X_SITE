@@ -196,11 +196,11 @@ public class TweetServiceImp implements TweetService {
             for (int i = 0; i < tabs; i++) {
                 System.out.print("\t");
             }
-            System.out.println(choosenTweet.getUser().getDisplayName() +"\n");
+            System.out.println(choosenTweet.getUser().getDisplayName() + "\n");
             for (int i = 0; i < tabs; i++) {
                 System.out.print("\t");
             }
-            System.out.println(choosenTweet.getContent()+"\n");
+            System.out.println(choosenTweet.getContent() + "\n");
             if (!choosenTweet.getBrief().isEmpty()) {
                 for (int i = 0; i < tabs; i++) {
                     System.out.print("\t");

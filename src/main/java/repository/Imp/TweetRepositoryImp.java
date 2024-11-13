@@ -63,7 +63,7 @@ public class TweetRepositoryImp implements TweetRepository {
             SELECT retweet_id FROM retweet_tweets
             WHERE tweet_id = ?
             """;
-    private static final String GET_TWEET_OF_RETWEET_SQL= """
+    private static final String GET_TWEET_OF_RETWEET_SQL = """
             SELECT tweet_id FROM retweet_tweets
             WHERE retweet_id = ?
             """;
@@ -126,6 +126,7 @@ public class TweetRepositoryImp implements TweetRepository {
             WHERE id = ?
             """;
 
+    @Override
     public Tweet read(long id) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(FIND_BY_ID_SQL)) {
             statement.setLong(1, id);
@@ -307,8 +308,9 @@ public class TweetRepositoryImp implements TweetRepository {
         }
     }
 
+    @Override
     public Tweet getTweetOfRetweet(Tweet retweet) throws SQLException {
-        try (var statement = Datasource.getConnection().prepareStatement(GET_TWEET_OF_RETWEET_SQL)){
+        try (var statement = Datasource.getConnection().prepareStatement(GET_TWEET_OF_RETWEET_SQL)) {
             statement.setLong(1, retweet.getId());
             ResultSet resultSet = statement.executeQuery();
             Tweet tweet = null;

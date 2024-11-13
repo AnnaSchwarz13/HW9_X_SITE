@@ -27,7 +27,7 @@ public class UserServiceImp implements UserService {
         if (userRepositoryImp.all() != null) {
             for (User checkingUser : userRepositoryImp.all()) {
                 if (checkingUser.getUsername().equals(username)) {
-                    if (passwordAuthenticationImp.authenticate(password.toCharArray(),checkingUser.getPassword())) {
+                    if (passwordAuthenticationImp.authenticate(password.toCharArray(), checkingUser.getPassword())) {
                         authenticationServiceImp.setLoggedUser(userRepositoryImp.findByUsername(username));
                         System.out.println("User logged in successfully...");
                         return;
@@ -45,10 +45,10 @@ public class UserServiceImp implements UserService {
         if (userRepositoryImp.all() != null) {
             for (User checkingUser : userRepositoryImp.all()) {
                 if (checkingUser.getEmail().equals(email)) {
-                        if (passwordAuthenticationImp.authenticate(password.toCharArray(),checkingUser.getPassword())) {
-                            authenticationServiceImp.setLoggedUser(userRepositoryImp.findByUsername(checkingUser.getUsername()));
-                            System.out.println("User logged in successfully...");
-                            return;
+                    if (passwordAuthenticationImp.authenticate(password.toCharArray(), checkingUser.getPassword())) {
+                        authenticationServiceImp.setLoggedUser(userRepositoryImp.findByUsername(checkingUser.getUsername()));
+                        System.out.println("User logged in successfully...");
+                        return;
 
                     }
                     break;
@@ -65,8 +65,8 @@ public class UserServiceImp implements UserService {
 
 
     private void changePassword(String oldPassword, String newPassword) throws SQLException {
-        if (passwordAuthenticationImp.authenticate(oldPassword.toCharArray(),authenticationServiceImp.getLoggedUser().getPassword())) {
-            userRepositoryImp.updateProfile(userRepositoryImp.read(authenticationServiceImp.getLoggedUser().getId()), passwordAuthenticationImp.hash(newPassword.toCharArray()) ,"password");
+        if (passwordAuthenticationImp.authenticate(oldPassword.toCharArray(), authenticationServiceImp.getLoggedUser().getPassword())) {
+            userRepositoryImp.updateProfile(userRepositoryImp.read(authenticationServiceImp.getLoggedUser().getId()), passwordAuthenticationImp.hash(newPassword.toCharArray()), "password");
             System.out.println("Password changed successfully");
             return;
         }
@@ -116,19 +116,19 @@ public class UserServiceImp implements UserService {
             String username = scanner.next();
             System.out.println("Enter new username");
             String newUsername = scanner.next();
-            changeUsername(username,newUsername);
+            changeUsername(username, newUsername);
         } else if (option == 2) {
             System.out.println("Enter old email");
             String oldEmail = scanner.next();
             System.out.println("Enter new email");
             String newEmail = scanner.next();
-            changeEmail(oldEmail,newEmail);
+            changeEmail(oldEmail, newEmail);
         } else if (option == 3) {
             System.out.println("Enter old password");
             String oldPassword = scanner.next();
             System.out.println("Enter new password");
             String newPassword = scanner.next();
-            changePassword(oldPassword,newPassword);
+            changePassword(oldPassword, newPassword);
         } else if (option == 4) {
             System.out.println("Enter new DisplayName");
             String newDisplayName = scanner.next();

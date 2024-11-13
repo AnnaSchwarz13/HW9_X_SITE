@@ -43,7 +43,7 @@ public class AuthenticationServiceImp implements AuthenticationService {
         if (userRepositoryImp.all() != null) {
             for (User checkingUser : userRepositoryImp.all()) {
                 if (checkingUser.getUsername().equals(username)) {
-                        return false;
+                    return false;
 
                 }
             }
@@ -56,7 +56,7 @@ public class AuthenticationServiceImp implements AuthenticationService {
         if (userRepositoryImp.all() != null) {
             for (User checkingUser : userRepositoryImp.all()) {
                 if (checkingUser.getEmail().equals(email)) {
-                   return false;
+                    return false;
                 }
             }
         }
@@ -68,8 +68,7 @@ public class AuthenticationServiceImp implements AuthenticationService {
      * @author erickson
      * @see <a href="http://stackoverflow.com/a/2861125/3474">StackOverflow</a>
      */
-    public static final class PasswordAuthentication
-    {
+    public static final class PasswordAuthentication {
         /**
          * Each token produced by this class uses this identifier as a prefix.
          */
@@ -90,8 +89,7 @@ public class AuthenticationServiceImp implements AuthenticationService {
 
         private final int cost;
 
-        public PasswordAuthentication()
-        {
+        public PasswordAuthentication() {
             this(DEFAULT_COST);
         }
 
@@ -100,15 +98,13 @@ public class AuthenticationServiceImp implements AuthenticationService {
          *
          * @param cost the exponential computational cost of hashing a password, 0 to 30
          */
-        public PasswordAuthentication(int cost)
-        {
+        public PasswordAuthentication(int cost) {
             iterations(cost); /* Validate cost */
             this.cost = cost;
             this.random = new SecureRandom();
         }
 
-        private static int iterations(int cost)
-        {
+        private static int iterations(int cost) {
             if ((cost < 0) || (cost > 30))
                 throw new IllegalArgumentException("cost: " + cost);
             return 1 << cost;
@@ -119,8 +115,7 @@ public class AuthenticationServiceImp implements AuthenticationService {
          *
          * @return a secure authentication token to be stored for later authentication
          */
-        public String hash(char[] password)
-        {
+        public String hash(char[] password) {
             byte[] salt = new byte[SIZE / 8];
             random.nextBytes(salt);
             byte[] dk = pbkdf2(password, salt, 1 << cost);
@@ -136,8 +131,7 @@ public class AuthenticationServiceImp implements AuthenticationService {
          *
          * @return true if the password and token match
          */
-        public boolean authenticate(char[] password, String token)
-        {
+        public boolean authenticate(char[] password, String token) {
             Matcher m = layout.matcher(token);
             if (!m.matches())
                 throw new IllegalArgumentException("Invalid token format");
@@ -151,17 +145,14 @@ public class AuthenticationServiceImp implements AuthenticationService {
             return zero == 0;
         }
 
-        private static byte[] pbkdf2(char[] password, byte[] salt, int iterations)
-        {
+        private static byte[] pbkdf2(char[] password, byte[] salt, int iterations) {
             KeySpec spec = new PBEKeySpec(password, salt, iterations, SIZE);
             try {
                 SecretKeyFactory f = SecretKeyFactory.getInstance(ALGORITHM);
                 return f.generateSecret(spec).getEncoded();
-            }
-            catch (NoSuchAlgorithmException ex) {
+            } catch (NoSuchAlgorithmException ex) {
                 throw new IllegalStateException("Missing algorithm: " + ALGORITHM, ex);
-            }
-            catch (InvalidKeySpecException ex) {
+            } catch (InvalidKeySpecException ex) {
                 throw new IllegalStateException("Invalid SecretKeyFactory", ex);
             }
         }

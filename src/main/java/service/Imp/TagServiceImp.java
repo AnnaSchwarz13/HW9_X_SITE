@@ -12,13 +12,13 @@ import java.util.Scanner;
 public class TagServiceImp implements TagService {
     Scanner sc = new Scanner(System.in);
     TagRepositoryImp tagRepositoryImp = new TagRepositoryImp();
-@Override
+
+    @Override
     public List<Tag> setTweetTags() throws SQLException {
         List<Tag> tags = new ArrayList<>();
-        if(tagRepositoryImp.findCount()==0){
+        if (tagRepositoryImp.findCount() == 0) {
             System.out.println("no tag yet");
-        }
-        else {
+        } else {
             System.out.println("Please enter the tags of the tweet: \n at the end enter -1");
             for (Tag tag : tagRepositoryImp.all()) {
                 System.out.println(tag.getTitle());
@@ -46,7 +46,7 @@ public class TagServiceImp implements TagService {
                 }
 
             } else {
-                Tag newTag =tagRepositoryImp.findTagByTile(tagName);
+                Tag newTag = tagRepositoryImp.findTagByTile(tagName);
                 if (newTag != null) {
                     tags.add(newTag);
                 }

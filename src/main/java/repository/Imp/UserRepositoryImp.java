@@ -74,6 +74,7 @@ public class UserRepositoryImp implements UserRepository {
         }
     }
 
+    @Override
     public User read(long id) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(FIND_BY_ID_SQL)) {
             statement.setLong(1, id);
