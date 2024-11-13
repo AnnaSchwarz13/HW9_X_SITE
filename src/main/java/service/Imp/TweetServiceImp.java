@@ -111,12 +111,18 @@ public class TweetServiceImp implements TweetService {
         } else if (choose == 2) {
             List<Tag> newTags = choosenTweet.getBrief();
             while (true) {
-                System.out.println("Your tweet's tag(s) are there");
-                for (Tag tag : newTags) {
-                    System.out.println(tag.getTitle());
+                if(newTags.isEmpty()){
+                    System.out.println("Your tweet have no tag yet");
+                    System.out.println("for add more enter 1 \n and at the end -1");
                 }
-                System.out.println("for add more enter 1 \n remove one tag enter 2 \n and at the end -1");
-                int choose2 = sc.nextInt();
+                else{
+                    System.out.println("Your tweet's tag(s) are there");
+                    for (Tag tag : newTags) {
+                        System.out.println(tag.getTitle());
+                    }
+                    System.out.println("for add more enter 1 \n remove one tag enter 2 \n and at the end -1");
+                }
+              int choose2 = sc.nextInt();
                 if (choose2 == 1) {
                     List<Tag> newTagsToAdd = tagServiceImp.setTweetTags();
                     newTags.addAll(newTagsToAdd);
@@ -151,6 +157,7 @@ public class TweetServiceImp implements TweetService {
             int action = sc.nextInt();
             if (action == 1) {
                 deleteTweetRetweet(choosenTweet);
+                System.out.println("Tweet successfully removed");
             } else if (action == 2) {
                 System.out.println("Action canceled !");
             }
