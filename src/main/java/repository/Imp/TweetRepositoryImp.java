@@ -20,7 +20,6 @@ public class TweetRepositoryImp implements TweetRepository {
              INSERT INTO tweets(text,created_date ,user_id )
              VALUES (?, ? ,? )
             """;
-
     private static final String DELETE_BY_ID_SQL = """
             DELETE FROM tweets
             WHERE id = ?
@@ -92,14 +91,6 @@ public class TweetRepositoryImp implements TweetRepository {
              DELETE FROM disLIKES_tweet
              WHERE tweet_id = ? and dislike_id = ?
             """;
-    private static final String DELETE_RETWEET_SQL = """
-             DELETE FROM retweets_tweet
-             WHERE tweet_id = ? and retweet_id = ?
-            """;
-    private static final String DELETE_VIEW_SQL = """
-             DELETE FROM views_tweet
-             WHERE tweet_id = ? and view_id = ?
-            """;
     private static final String DELETE_ALL_view_SQL = """
              DELETE FROM views_tweet
              WHERE tweet_id = ?
@@ -126,6 +117,7 @@ public class TweetRepositoryImp implements TweetRepository {
             WHERE id = ?
             """;
 
+    //read
     @Override
     public Tweet read(long id) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(FIND_BY_ID_SQL)) {
@@ -142,168 +134,15 @@ public class TweetRepositoryImp implements TweetRepository {
                 boolean isRetweeted = resultSet.getBoolean(5);
 
                 tweet = new Tweet(user, tweetId, text, postedDate);
-                tweet.setDislikes_ids(getActionOfTweet(tweetId, "dislike"));
-                tweet.setLikes_ids(getActionOfTweet(tweetId, "like"));
-                tweet.setViews_ids(getActionOfTweet(tweetId, "view"));
-                tweet.setRetweets(getActionOfTweet(tweetId, "retweet"));
+                tweet.setDislikes_ids(getDislikes(tweetId));
+                tweet.setLikes_ids(getLikes(tweetId));
+                tweet.setViews_ids(getViews(tweetId));
+                tweet.setRetweets(getRetweets(tweetId));
                 tweet.setRetweeted(isRetweeted);
 
                 tweet.setBrief(tagRepositoryImp.getTags(tweet));
             }
             return tweet;
-        }
-    }
-
-    @Override
-    public Tweet create(Tweet tweet) throws SQLException {
-        try (var statement = Datasource.getConnection().prepareStatement(INSERT_SQL)) {
-            statement.setString(1, tweet.getContent());
-            statement.setDate(2, Date.valueOf(LocalDate.now()));
-            statement.setLong(3, tweet.getUser().getId());
-            statement.executeUpdate();
-            long id = getLastId(tweet.getUser());
-            tweet.setId(id);
-            return tweet;
-        }
-    }
-
-    @Override
-    public void setRetweet(long tweetId) throws SQLException {
-        try (var statement = Datasource.getConnection().prepareStatement(SET_TWEETED_SQL)) {
-            statement.setLong(1, tweetId);
-            statement.executeUpdate();
-        }
-    }
-
-    @Override
-    public void delete(long id) throws SQLException {
-        try (var statement = Datasource.getConnection().prepareStatement(DELETE_BY_ID_SQL)) {
-            statement.setLong(1, id);
-            statement.executeUpdate();
-        }
-    }
-
-    @Override
-    public void deleteActions(long tweetId, long userId, String which) throws SQLException {
-        actionChoose(tweetId, userId, which, DELETE_LIKE_SQL, DELETE_DISLIKE_SQL, DELETE_VIEW_SQL, DELETE_RETWEET_SQL);
-    }
-
-    @Override
-    public void deleteRecords(long tweetId, String which) throws SQLException {//change
-        PreparedStatement statement = switch (which) {
-            case "like" -> Datasource.getConnection().prepareStatement(DELETE_ALL_LIKE_SQL);
-            case "dislike" -> Datasource.getConnection().prepareStatement(DELETE_ALL_DISLIKE_SQL);
-            case "view" -> Datasource.getConnection().prepareStatement(DELETE_ALL_view_SQL);
-            case "retweet" -> Datasource.getConnection().prepareStatement(DELETE_ALL_RETWEET_SQL);
-            case "tweet" -> Datasource.getConnection().prepareStatement(DELETE_ALL_RETWEET_REL_SQL);
-            default -> null;
-        };
-
-        if (statement != null) {
-            statement.setLong(1, tweetId);
-            statement.executeUpdate();
-        }
-    }
-
-
-    @Override
-    public List<Tweet> getTweetsOfAUser(User user) {
-        try (var statement = Datasource.getConnection().prepareStatement(FIND_ALL_USER_TWEETS_SQL)) {
-            statement.setLong(1, user.getId());
-            return getTweets(statement);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public List<Tweet> all() {
-        try (var statement = Datasource.getConnection().prepareStatement(ALL_TWEETS)) {
-            return getTweets(statement);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private List<Tweet> getTweets(PreparedStatement statement) throws SQLException {
-        ResultSet resultSet = statement.executeQuery();
-        List<Tweet> publishedTweets = new LinkedList<>();
-        while (resultSet.next()) {
-            Tweet tweet = read(resultSet.getLong(1));
-            publishedTweets.add(tweet);
-        }
-        return new ArrayList<>(publishedTweets);
-    }
-
-    //update details
-
-    @Override
-    public void updateText(Tweet tweet, String newValue) throws SQLException {
-        try (var statement = Datasource.getConnection().prepareStatement(UPDATE_TEXT_SQL)) {
-            statement.setString(1, newValue);
-            statement.setLong(2, tweet.getId());
-            statement.executeUpdate();
-        }
-    }
-
-    @Override
-    public void updateActions(long tweetId, long userId, String which) throws SQLException {
-        actionChoose(userId, tweetId, which, INSERT_like_SQL, INSERT_dislike_SQL, INSERT_view_SQL, INSERT_retweet_SQL);
-    }
-
-    private long getLastId(User user) throws SQLException {
-        try (var statement = Datasource.getConnection().prepareStatement(GET_LAST_INDEX)) {
-            statement.setLong(1, user.getId());
-            ResultSet resultSet = statement.executeQuery();
-
-            long id = 0;
-            if (resultSet.next()) {
-                id = resultSet.getLong(1);
-            }
-            return id;
-        }
-    }
-
-    private List<Long> getActionOfTweet(long id, String which) throws SQLException {//change
-        PreparedStatement statement = switch (which) {
-            case "like" -> Datasource.getConnection().prepareStatement(GET_LIKES_SQL);
-            case "dislike" -> Datasource.getConnection().prepareStatement(GET_DISLIKES_SQL);
-            case "view" -> Datasource.getConnection().prepareStatement(GET_VIEWS_SQL);
-            case "retweet" -> Datasource.getConnection().prepareStatement(GET_RETWEETS_SQL);
-            default -> null;
-        };
-        if (statement != null) {
-            statement.setLong(1, id);
-            statement.execute();
-            return getIds(statement);
-        }
-        return null;
-    }
-
-
-    private List<Long> getIds(PreparedStatement statement) throws SQLException {
-        ResultSet resultSet = statement.executeQuery();
-        List<Long> ids = new LinkedList<>();
-        while (resultSet.next()) {
-            long id = resultSet.getLong(1);
-            ids.add(id);
-        }
-        return new ArrayList<>(ids);
-    }
-
-    private void actionChoose(long tweetId, long userId, String which, String deleteLikeSql, String deleteDislikeSql, String deleteViewSql, String deleteRetweetSql) throws SQLException {//change
-        PreparedStatement statement = switch (which) {
-            case "like" -> Datasource.getConnection().prepareStatement(deleteLikeSql);
-            case "dislike" -> Datasource.getConnection().prepareStatement(deleteDislikeSql);
-            case "view" -> Datasource.getConnection().prepareStatement(deleteViewSql);
-            case "retweet" -> Datasource.getConnection().prepareStatement(deleteRetweetSql);
-            default -> null;
-        };
-
-        if (statement != null) {
-            statement.setLong(1, tweetId);
-            statement.setLong(2, userId);
-            statement.executeUpdate();
         }
     }
 
@@ -320,6 +159,226 @@ public class TweetRepositoryImp implements TweetRepository {
         }
     }
 
+    @Override
+    public List<Tweet> all() {
+        try (var statement = Datasource.getConnection().prepareStatement(ALL_TWEETS)) {
+            return getTweets(statement);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
+    @Override
+    public List<Tweet> getTweetsOfAUser(User user) {
+        try (var statement = Datasource.getConnection().prepareStatement(FIND_ALL_USER_TWEETS_SQL)) {
+            statement.setLong(1, user.getId());
+            return getTweets(statement);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private List<Long> getLikes(long tweetId) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(GET_LIKES_SQL)) {
+            List<Long> likes = new ArrayList<>();
+            statement.setLong(1, tweetId);
+            statement.execute();
+            return getIds(statement);
+        }
+    }
+
+    private List<Long> getDislikes(long tweetId) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(GET_DISLIKES_SQL)) {
+            List<Long> likes = new ArrayList<>();
+            statement.setLong(1, tweetId);
+            statement.execute();
+            return getIds(statement);
+        }
+    }
+
+    private List<Long> getViews(long tweetId) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(GET_VIEWS_SQL)) {
+            List<Long> likes = new ArrayList<>();
+            statement.setLong(1, tweetId);
+            statement.execute();
+            return getIds(statement);
+        }
+    }
+
+    private List<Long> getRetweets(long tweetId) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(GET_RETWEETS_SQL)) {
+            List<Long> likes = new ArrayList<>();
+            statement.setLong(1, tweetId);
+            statement.execute();
+            return getIds(statement);
+        }
+    }
+
+    private List<Long> getIds(PreparedStatement statement) throws SQLException {
+        ResultSet resultSet = statement.executeQuery();
+        List<Long> ids = new LinkedList<>();
+        while (resultSet.next()) {
+            long id = resultSet.getLong(1);
+            ids.add(id);
+        }
+        return new ArrayList<>(ids);
+    }
+
+    private List<Tweet> getTweets(PreparedStatement statement) throws SQLException {
+        ResultSet resultSet = statement.executeQuery();
+        List<Tweet> publishedTweets = new LinkedList<>();
+        while (resultSet.next()) {
+            Tweet tweet = read(resultSet.getLong(1));
+            publishedTweets.add(tweet);
+        }
+        return new ArrayList<>(publishedTweets);
+    }
+
+    //create
+    @Override
+    public Tweet create(Tweet tweet) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(INSERT_SQL)) {
+            statement.setString(1, tweet.getContent());
+            statement.setDate(2, Date.valueOf(LocalDate.now()));
+            statement.setLong(3, tweet.getUser().getId());
+            statement.executeUpdate();
+            long id = getLastId(tweet.getUser());
+            tweet.setId(id);
+            return tweet;
+        }
+    }
+
+    private long getLastId(User user) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(GET_LAST_INDEX)) {
+            statement.setLong(1, user.getId());
+            ResultSet resultSet = statement.executeQuery();
+
+            long id = 0;
+            if (resultSet.next()) {
+                id = resultSet.getLong(1);
+            }
+            return id;
+        }
+    }
+
+    @Override
+    public void setRetweet(long tweetId) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(SET_TWEETED_SQL)) {
+            statement.setLong(1, tweetId);
+            statement.executeUpdate();
+        }
+    }
+
+    //delete
+    @Override
+    public void delete(long id) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(DELETE_BY_ID_SQL)) {
+            statement.setLong(1, id);
+            statement.executeUpdate();
+        }
+    }
+
+    @Override
+    public void deleteAllLikes(long tweetId) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(DELETE_ALL_LIKE_SQL)) {
+            statement.setLong(1, tweetId);
+            statement.executeUpdate();
+        }
+    }
+
+    @Override
+    public void deleteAllDislikes(long tweetId) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(DELETE_ALL_DISLIKE_SQL)) {
+            statement.setLong(1, tweetId);
+            statement.executeUpdate();
+        }
+    }
+
+    @Override
+    public void deleteAllRetweets(long tweetId) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(DELETE_ALL_RETWEET_SQL)) {
+            statement.setLong(1, tweetId);
+            statement.executeUpdate();
+        }
+    }
+
+    @Override
+    public void deleteAllViews(long tweetId) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(DELETE_ALL_view_SQL)) {
+            statement.setLong(1, tweetId);
+            statement.executeUpdate();
+        }
+    }
+
+    @Override
+    public void deleteRetweetRecords(long tweetId) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(DELETE_ALL_RETWEET_REL_SQL)) {
+            statement.setLong(1, tweetId);
+            statement.executeUpdate();
+        }
+    }
+
+    @Override
+    public void deleteLike(long tweetId, long likeId) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(DELETE_LIKE_SQL)) {
+            statement.setLong(1, tweetId);
+            statement.setLong(2, likeId);
+            statement.executeUpdate();
+        }
+    }
+
+    @Override
+    public void deleteDislike(long tweetId, long dislikeId) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(DELETE_DISLIKE_SQL)) {
+            statement.setLong(1, tweetId);
+            statement.setLong(2, dislikeId);
+            statement.executeUpdate();
+        }
+    }
+
+    //update
+    @Override
+    public void updateText(Tweet tweet, String newValue) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(UPDATE_TEXT_SQL)) {
+            statement.setString(1, newValue);
+            statement.setLong(2, tweet.getId());
+            statement.executeUpdate();
+        }
+    }
+
+    @Override
+    public void updateLike(long tweetId, long userId) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(INSERT_like_SQL)) {
+            statement.setLong(1, tweetId);
+            statement.setLong(2, userId);
+            statement.executeUpdate();
+        }
+    }
+
+    @Override
+    public void updateDislike(long tweetId, long userId) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(INSERT_dislike_SQL)) {
+            statement.setLong(1, tweetId);
+            statement.setLong(2, userId);
+            statement.executeUpdate();
+        }
+    }
+
+    @Override
+    public void updateRetweet(long tweetId, long retweetId) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(INSERT_retweet_SQL)) {
+            statement.setLong(1, tweetId);
+            statement.setLong(2, retweetId);
+            statement.executeUpdate();
+        }
+    }
+
+    @Override
+    public void updateView(long tweetId, long userId) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(INSERT_view_SQL)) {
+            statement.setLong(1, tweetId);
+            statement.setLong(2, userId);
+            statement.executeUpdate();
+        }
+    }
 }
-

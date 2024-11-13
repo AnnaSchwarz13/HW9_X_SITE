@@ -10,6 +10,14 @@ public interface UserRepository {
 
     User read(long id) throws SQLException;
 
+    User findByUsername(String username) throws SQLException;
+
+    boolean isUsernameExist(String username) throws SQLException;
+
+    boolean isEmailExist(String email) throws SQLException;
+
+    List<User> all();
+
     void updateBio(long id, String bio) throws SQLException;
 
     void updateDisplayName(long id, String displayName) throws SQLException;
@@ -19,12 +27,4 @@ public interface UserRepository {
     void updateUsername(long id, String username) throws SQLException;
 
     void updatePassword(long id, String password) throws SQLException;
-
-    User findByUsername(String username) throws SQLException;
-
-    boolean isUsernameExist(String username) throws SQLException;
-
-    boolean isEmailExist(String email) throws SQLException;
-
-    List<User> all();
 }

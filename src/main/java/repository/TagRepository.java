@@ -9,9 +9,9 @@ import java.util.List;
 public interface TagRepository {
     Tag create(Tag tag) throws SQLException;
 
-    Tag read(int id) throws SQLException;
+    void setTweetTag(List<Tag> tags, Tweet tweet);
 
-    void delete(long id) throws SQLException;
+    Tag read(int id) throws SQLException;
 
     int findCount() throws SQLException;
 
@@ -21,5 +21,5 @@ public interface TagRepository {
 
     List<Tag> getTags(Tweet tweet);
 
-    void setTweetTag(List<Tag> tags, Tweet tweet);
+    void delete(long id) throws SQLException;
 }

@@ -54,11 +54,10 @@ public class TweetServiceImp implements TweetService {
                     int action = sc.nextInt();
                     if (action == 1) {
                         if (!tweetRepositoryImp.read(id).getLikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
-                            tweetRepositoryImp.updateActions(tweetRepositoryImp.read(id).getId()
-                                    , authenticationServiceImp.getLoggedUser().getId(), "like");
+                            tweetRepositoryImp.updateLike(tweetRepositoryImp.read(id).getId(), authenticationServiceImp.getLoggedUser().getId());
                             tweetRepositoryImp.read(id).getLikes_ids().add(authenticationServiceImp.getLoggedUser().getId());
                             if (tweetRepositoryImp.read(id).getDislikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
-                                tweetRepositoryImp.deleteActions(id, authenticationServiceImp.getLoggedUser().getId(), "dislike");
+                                tweetRepositoryImp.deleteDislike(id, authenticationServiceImp.getLoggedUser().getId());
                                 System.out.println("liked!");
                             }
                         } else {
@@ -66,11 +65,10 @@ public class TweetServiceImp implements TweetService {
                         }
                     } else if (action == 2) {
                         if (!tweetRepositoryImp.read(id).getDislikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
-                            tweetRepositoryImp.updateActions(tweetRepositoryImp.read(id).getId()
-                                    , authenticationServiceImp.getLoggedUser().getId(), "dislike");
+                            tweetRepositoryImp.updateDislike(tweetRepositoryImp.read(id).getId(), authenticationServiceImp.getLoggedUser().getId());
                             tweetRepositoryImp.read(id).getDislikes_ids().add(authenticationServiceImp.getLoggedUser().getId());
                             if (tweetRepositoryImp.read(id).getLikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
-                                tweetRepositoryImp.deleteActions(id, authenticationServiceImp.getLoggedUser().getId(), "like");
+                                tweetRepositoryImp.deleteLike(id, authenticationServiceImp.getLoggedUser().getId());
                                 System.out.println("disliked!");
                             }
                         } else {
@@ -80,8 +78,7 @@ public class TweetServiceImp implements TweetService {
                     } else if (action == 3) {
                         System.out.println("replay:");
                         Tweet tweet = addTweet();
-                        tweetRepositoryImp.updateActions(tweetRepositoryImp.read(id).getId()
-                                , tweet.getId(), "retweet");
+                        tweetRepositoryImp.updateRetweet(tweetRepositoryImp.read(id).getId(), tweet.getId());
                         tweetRepositoryImp.read(id).getRetweets().add(tweet.getId());
                         tweetRepositoryImp.setRetweet(tweet.getId());
                         System.out.println("retweeted!");
@@ -229,8 +226,7 @@ public class TweetServiceImp implements TweetService {
 
     private void addView(Tweet choosenTweet) throws SQLException {
         if (!choosenTweet.getViews_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
-            tweetRepositoryImp.updateActions(choosenTweet.getId()
-                    , authenticationServiceImp.getLoggedUser().getId(), "view");
+            tweetRepositoryImp.updateView(choosenTweet.getId(), authenticationServiceImp.getLoggedUser().getId());
             choosenTweet.getViews_ids().add(authenticationServiceImp.getLoggedUser().getId());
         }
         if (!choosenTweet.getRetweets().isEmpty()) {
@@ -243,17 +239,17 @@ public class TweetServiceImp implements TweetService {
 
     private void deleteTweetRetweet(Tweet tweet) throws SQLException {
         if (!tweet.getRetweets().isEmpty()) {
-            tweetRepositoryImp.deleteRecords(tweet.getId(), "retweet");
+            tweetRepositoryImp.deleteAllRetweets(tweet.getId());
             for (Long retweet : tweet.getRetweets()) {
                 deleteTweetRetweet(tweetRepositoryImp.read(retweet));
             }
         }
-        tweetRepositoryImp.deleteRecords(tweet.getId(), "like");
-        tweetRepositoryImp.deleteRecords(tweet.getId(), "dislike");
-        tweetRepositoryImp.deleteRecords(tweet.getId(), "view");
+        tweetRepositoryImp.deleteAllLikes(tweet.getId());
+        tweetRepositoryImp.deleteAllDislikes(tweet.getId());
+        tweetRepositoryImp.deleteAllViews(tweet.getId());
         tagRepositoryImp.delete(tweet.getId());
         if (tweet.isRetweeted()) {
-            tweetRepositoryImp.deleteRecords(tweet.getId(), "tweet");
+            tweetRepositoryImp.deleteRetweetRecords(tweet.getId());
         }
         tweetRepositoryImp.delete(tweet.getId());
     }

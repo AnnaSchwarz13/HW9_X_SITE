@@ -15,12 +15,10 @@ public class TagRepositoryImp implements TagRepository {
 
     private static final String INSERT_SQL =
             "INSERT INTO Tags(title) VALUES (?)";
-
     private static final String DELETE_BY_TWEET_ID_SQL = """
             DELETE FROM Tags_tweets
             WHERE tweet_id = ?
             """;
-
     private static final String FIND_BY_ID_SQL = """
             SELECT * FROM Tags
             WHERE id = ?
@@ -31,7 +29,6 @@ public class TagRepositoryImp implements TagRepository {
     private static final String READ_ALL_SQL = """
             SELECT * FROM Tags
             """;
-
     private static final String FIND_BY_TITLE_SQL = """
             SELECT * FROM Tags
             WHERE title = ?
@@ -44,7 +41,7 @@ public class TagRepositoryImp implements TagRepository {
             INSERT INTO Tags_tweets(tweet_id, tag_id) VALUES (?, ?)
             """;
 
-
+    //create
     @Override
     public Tag create(Tag tag) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(INSERT_SQL)) {
@@ -54,6 +51,21 @@ public class TagRepositoryImp implements TagRepository {
         }
     }
 
+    //update
+    @Override
+    public void setTweetTag(List<Tag> tags, Tweet tweet) {
+        try (var statement = Datasource.getConnection().prepareStatement(INSET_TWEETS_TAGS)) {
+            for (Tag tag : tags) {
+                statement.setLong(1, tweet.getId());
+                statement.setLong(2, tag.getId());
+                statement.execute();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    //read
     @Override
     public Tag read(int id) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(FIND_BY_ID_SQL)) {
@@ -67,15 +79,6 @@ public class TagRepositoryImp implements TagRepository {
             }
 
             return tag;
-        }
-    }
-
-    @Override
-    public void delete(long id) throws SQLException {
-        try (var statement = Datasource.getConnection().prepareStatement(DELETE_BY_TWEET_ID_SQL)) {
-            statement.setLong(1, id);
-            var affectedRows = statement.executeUpdate();
-            System.out.println("# of Contacts deleted: " + affectedRows);
         }
     }
 
@@ -137,16 +140,12 @@ public class TagRepositoryImp implements TagRepository {
         }
     }
 
+    //delete
     @Override
-    public void setTweetTag(List<Tag> tags, Tweet tweet) {
-        try (var statement = Datasource.getConnection().prepareStatement(INSET_TWEETS_TAGS)) {
-            for (Tag tag : tags) {
-                statement.setLong(1, tweet.getId());
-                statement.setLong(2, tag.getId());
-                statement.execute();
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+    public void delete(long id) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(DELETE_BY_TWEET_ID_SQL)) {
+            statement.setLong(1, id);
+            var affectedRows = statement.executeUpdate();
         }
     }
 
