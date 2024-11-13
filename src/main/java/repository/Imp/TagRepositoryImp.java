@@ -27,15 +27,15 @@ public class TagRepositoryImp implements TagRepository {
     private static final String FIND_COUNT_SQL = """
             SELECT COUNT(*) FROM Tags
             """;
-    public static final String READ_ALL_SQL = """
+    private static final String READ_ALL_SQL = """
             SELECT * FROM Tags
             """;
 
-    public static final String FIND_BY_TITLE_SQL = """
+    private static final String FIND_BY_TITLE_SQL = """
             SELECT * FROM Tags
             WHERE title = ?
             """;
-    public static final String FIND_TWEETS_TAG = """
+    private static final String FIND_TWEETS_TAG = """
             SELECT tag_id FROM Tags_tweets
             WHERE tweet_id = ?
             """;

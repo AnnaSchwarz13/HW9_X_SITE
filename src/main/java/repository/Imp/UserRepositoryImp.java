@@ -54,7 +54,7 @@ public class UserRepositoryImp implements UserRepository {
             WHERE username = ?
             """;
 
-    public static final String READ_ALL_SQL = """
+    private static final String READ_ALL_SQL = """
             SELECT * FROM x_site_users
             """;
     private static final String IS_USERNAME_NEW = """
@@ -155,6 +155,7 @@ public class UserRepositoryImp implements UserRepository {
         }
     }
 
+    @Override
     public boolean isUsernameExist(String username) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(IS_USERNAME_NEW)) {
             statement.setString(1, username);
@@ -163,6 +164,7 @@ public class UserRepositoryImp implements UserRepository {
         }
     }
 
+    @Override
     public boolean isEmailExist(String email) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(IS_EMAIL_NEW)) {
             statement.setString(1, email);

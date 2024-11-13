@@ -32,34 +32,34 @@ public class TweetRepositoryImp implements TweetRepository {
             SELECT * FROM tweets
             WHERE id = ?
             """;
-    public static final String FIND_ALL_USER_TWEETS_SQL = """
+    private static final String FIND_ALL_USER_TWEETS_SQL = """
             SELECT * FROM tweets
             WHERE user_id = ?
             """;
-    public static final String UPDATE_TEXT_SQL = """
+    private static final String UPDATE_TEXT_SQL = """
             UPDATE tweets
             SET text = ?
             WHERE id = ?
             """;
-    public static final String GET_LAST_INDEX = """
+    private static final String GET_LAST_INDEX = """
             SELECT id FROM tweets
             where user_id =?
             ORDER BY id DESC
             LIMIT 1
             """;
-    public static final String GET_LIKES_SQL = """
+    private static final String GET_LIKES_SQL = """
             SELECT like_id FROM likes_tweet
             WHERE tweet_id = ?
             """;
-    public static final String GET_DISLIKES_SQL = """
+    private static final String GET_DISLIKES_SQL = """
             SELECT dislike_id FROM dislikes_tweet
             WHERE tweet_id = ?
             """;
-    public static final String GET_VIEWS_SQL = """
+    private static final String GET_VIEWS_SQL = """
             SELECT view_id FROM views_tweet
             WHERE tweet_id = ?
             """;
-    public static final String GET_RETWEETS_SQL = """
+    private static final String GET_RETWEETS_SQL = """
             SELECT retweet_id FROM retweet_tweets
             WHERE tweet_id = ?
             """;

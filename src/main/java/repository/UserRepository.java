@@ -14,5 +14,9 @@ public interface UserRepository {
 
     User findByUsername(String username) throws SQLException;
 
+    boolean isUsernameExist(String username) throws SQLException;
+
+    boolean isEmailExist(String email) throws SQLException;
+
     List<User> all();
 }
