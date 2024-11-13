@@ -39,7 +39,7 @@ public class AuthenticationServiceImp implements AuthenticationService {
     }
 
     @Override
-    public boolean isUsernameNew(String username) {
+    public boolean isUsernameNew(String username) {//in repository
         if (userRepositoryImp.all() != null) {
             for (User checkingUser : userRepositoryImp.all()) {
                 if (checkingUser.getUsername().equals(username)) {

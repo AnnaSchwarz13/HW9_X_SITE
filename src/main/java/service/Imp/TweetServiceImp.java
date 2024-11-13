@@ -39,7 +39,6 @@ public class TweetServiceImp implements TweetService {
 
                 for (Tweet tempTweet : tweets) {
                     displayTweet(tempTweet);
-
                 }
 
                 long id = sc.nextLong();

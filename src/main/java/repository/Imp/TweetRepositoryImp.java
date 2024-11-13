@@ -120,7 +120,7 @@ public class TweetRepositoryImp implements TweetRepository {
             SET isretweeted = true
             WHERE id = ?
             """;
-
+//this
 
     public static Tweet read(long id) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(FIND_BY_ID_SQL)) {
@@ -137,10 +137,10 @@ public class TweetRepositoryImp implements TweetRepository {
                 boolean isRetweeted = resultSet.getBoolean(5);
 
                 tweet = new Tweet(user, tweetId, text, postedDate);
-                tweet.setDislikes_ids(getActionOfTweet(tweetId,"dislike"));
-                tweet.setLikes_ids(getActionOfTweet(tweetId,"like"));
-                tweet.setViews_ids(getActionOfTweet(tweetId,"view"));
-                tweet.setRetweets(getActionOfTweet(tweetId,"retweet"));
+                tweet.setDislikes_ids(getActionOfTweet(tweetId, "dislike"));
+                tweet.setLikes_ids(getActionOfTweet(tweetId, "like"));
+                tweet.setViews_ids(getActionOfTweet(tweetId, "view"));
+                tweet.setRetweets(getActionOfTweet(tweetId, "retweet"));
                 tweet.setRetweeted(isRetweeted);
 
                 tweet.setBrief(tagRepositoryImp.getTags(tweet));
@@ -161,9 +161,10 @@ public class TweetRepositoryImp implements TweetRepository {
             return tweet;
         }
     }
+
     @Override
     public void setRetweet(long tweetId) throws SQLException {
-        try(var statement = Datasource.getConnection().prepareStatement(SET_TWEETED_SQL)){
+        try (var statement = Datasource.getConnection().prepareStatement(SET_TWEETED_SQL)) {
             statement.setLong(1, tweetId);
             statement.executeUpdate();
         }
@@ -182,7 +183,8 @@ public class TweetRepositoryImp implements TweetRepository {
     public void deleteActions(long tweetId, long userId, String which) throws SQLException {
         actionChoose(tweetId, userId, which, DELETE_LIKE_SQL, DELETE_DISLIKE_SQL, DELETE_VIEW_SQL, DELETE_RETWEET_SQL);
     }
-@Override
+
+    @Override
     public void deleteRecords(long tweetId, String which) throws SQLException {
         PreparedStatement statement = switch (which) {
             case "like" -> Datasource.getConnection().prepareStatement(DELETE_ALL_LIKE_SQL);
@@ -219,7 +221,7 @@ public class TweetRepositoryImp implements TweetRepository {
         }
     }
 
-    private static List<Tweet> getTweets(PreparedStatement statement) throws SQLException {
+    private List<Tweet> getTweets(PreparedStatement statement) throws SQLException {
         ResultSet resultSet = statement.executeQuery();
         List<Tweet> publishedTweets = new LinkedList<>();
         while (resultSet.next()) {
@@ -247,7 +249,7 @@ public class TweetRepositoryImp implements TweetRepository {
 
 
     //----
-
+//delete statics
     private static long getLastId(User user) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(GET_LAST_INDEX)) {
             statement.setLong(1, user.getId());
@@ -261,7 +263,7 @@ public class TweetRepositoryImp implements TweetRepository {
         }
     }
 
-    private static List<Long> getActionOfTweet(long id , String which) throws SQLException {
+    private static List<Long> getActionOfTweet(long id, String which) throws SQLException {
         PreparedStatement statement = switch (which) {
             case "like" -> Datasource.getConnection().prepareStatement(GET_LIKES_SQL);
             case "dislike" -> Datasource.getConnection().prepareStatement(GET_DISLIKES_SQL);

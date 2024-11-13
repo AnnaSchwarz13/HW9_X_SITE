@@ -122,7 +122,6 @@ public class UserRepositoryImp implements UserRepository {
             ResultSet resultSet = statement.executeQuery();
             List<User> users = new LinkedList<>();
             while (resultSet.next()) {
-
                 User user = read(resultSet.getLong(1));
                 users.add(user);
             }

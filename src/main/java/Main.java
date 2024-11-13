@@ -72,7 +72,7 @@ public static void loginMenu(int option) throws SQLException {
                         System.out.println("enter your Bio :");
                         String bio = scanner.next();
                         System.out.println("enter your display name :\n(this name will show for other users)");
-                        String displayName = scanner.next() +  scanner.next();
+                        String displayName = scanner.next() ;
                         userService.userSignup(username, password, email, bio, displayName);
                         break;
                     }
