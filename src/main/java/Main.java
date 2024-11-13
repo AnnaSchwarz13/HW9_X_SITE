@@ -67,9 +67,9 @@ public static void loginMenu(int option) throws SQLException {
                     String email = scanner.next();
                     if (authenticationService.isEmailNew(email)) {
                         System.out.println("enter your Bio :");
-                        String bio = scanner.next();
+                        String bio = scanner.next() + scanner.next();
                         System.out.println("enter your display name :\n(this name will show for other users)");
-                        String displayName = scanner.next() ;
+                        String displayName = scanner.next();
                         userService.userSignup(username, password, email, bio, displayName);
                         break;
                     }
@@ -94,7 +94,7 @@ public static void xSiteMenu(int option) throws SQLException {
                 tweetService.displayTweet(tweet);
             else {
                 System.out.println("---------");
-                tweetService.displayRetweet(tweet , 0);
+                tweetService.displayRetweet(tweet, 0);
             }
         }
         long id = scanner.nextLong();

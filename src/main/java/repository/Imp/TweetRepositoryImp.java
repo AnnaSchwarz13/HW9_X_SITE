@@ -349,8 +349,8 @@ public class TweetRepositoryImp implements TweetRepository {
     @Override
     public void updateLike(long tweetId, long userId) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(INSERT_like_SQL)) {
-            statement.setLong(1, tweetId);
-            statement.setLong(2, userId);
+            statement.setLong(2, tweetId);
+            statement.setLong(1, userId);
             statement.executeUpdate();
         }
     }
@@ -358,8 +358,8 @@ public class TweetRepositoryImp implements TweetRepository {
     @Override
     public void updateDislike(long tweetId, long userId) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(INSERT_dislike_SQL)) {
-            statement.setLong(1, tweetId);
-            statement.setLong(2, userId);
+            statement.setLong(2, tweetId);
+            statement.setLong(1, userId);
             statement.executeUpdate();
         }
     }
@@ -367,8 +367,8 @@ public class TweetRepositoryImp implements TweetRepository {
     @Override
     public void updateRetweet(long tweetId, long retweetId) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(INSERT_retweet_SQL)) {
-            statement.setLong(1, tweetId);
-            statement.setLong(2, retweetId);
+            statement.setLong(2, tweetId);
+            statement.setLong(1, retweetId);
             statement.executeUpdate();
         }
     }
@@ -376,8 +376,8 @@ public class TweetRepositoryImp implements TweetRepository {
     @Override
     public void updateView(long tweetId, long userId) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(INSERT_view_SQL)) {
-            statement.setLong(1, tweetId);
-            statement.setLong(2, userId);
+            statement.setLong(2, tweetId);
+            statement.setLong(1, userId);
             statement.executeUpdate();
         }
     }
