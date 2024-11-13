@@ -5,7 +5,6 @@ import repository.Datasource;
 import repository.UserRepository;
 
 import java.sql.Date;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -105,25 +104,50 @@ public class UserRepositoryImp implements UserRepository {
     }
 
     //update
-
     @Override
-    public void updateProfile(User user, String newContent, String which) throws SQLException {
-        PreparedStatement statement = switch (which) {
-            case "bio" -> Datasource.getConnection().prepareStatement(UPDATE_BIO_SQL);
-            case "displayName" -> Datasource.getConnection().prepareStatement(UPDATE_DISPLAY_NAME_SQL);
-            case "email" -> Datasource.getConnection().prepareStatement(UPDATE_EMAIL_SQL);
-            case "username" -> Datasource.getConnection().prepareStatement(UPDATE_USERNAME_SQL);
-            case "password" -> Datasource.getConnection().prepareStatement(UPDATE_PASSWORD_SQL);
-            default -> null;
-        };
-
-        if (statement != null) {
-            statement.setString(1, newContent);
-            statement.setLong(2, user.getId());
+    public void updateBio(long id, String bio) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(UPDATE_BIO_SQL)) {
+            statement.setString(1, bio);
+            statement.setLong(2, id);
             statement.executeUpdate();
         }
     }
 
+    @Override
+    public void updateDisplayName(long id, String displayName) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(UPDATE_DISPLAY_NAME_SQL)) {
+            statement.setString(1, displayName);
+            statement.setLong(2, id);
+            statement.executeUpdate();
+        }
+    }
+
+    @Override
+    public void updateEmail(long id, String email) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(UPDATE_EMAIL_SQL)) {
+            statement.setString(1, email);
+            statement.setLong(2, id);
+            statement.executeUpdate();
+        }
+    }
+
+    @Override
+    public void updateUsername(long id, String username) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(UPDATE_USERNAME_SQL)) {
+            statement.setString(1, username);
+            statement.setLong(2, id);
+            statement.executeUpdate();
+        }
+    }
+
+    @Override
+    public void updatePassword(long id, String password) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(UPDATE_PASSWORD_SQL)) {
+            statement.setString(1, password);
+            statement.setLong(2, id);
+            statement.executeUpdate();
+        }
+    }
 
     @Override
     public List<User> all() {

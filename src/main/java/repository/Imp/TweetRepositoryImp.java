@@ -179,8 +179,7 @@ public class TweetRepositoryImp implements TweetRepository {
     public void delete(long id) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(DELETE_BY_ID_SQL)) {
             statement.setLong(1, id);
-            var affectedRows = statement.executeUpdate();
-            System.out.println("# of Contacts deleted: " + affectedRows);
+            statement.executeUpdate();
         }
     }
 
@@ -190,7 +189,7 @@ public class TweetRepositoryImp implements TweetRepository {
     }
 
     @Override
-    public void deleteRecords(long tweetId, String which) throws SQLException {
+    public void deleteRecords(long tweetId, String which) throws SQLException {//change
         PreparedStatement statement = switch (which) {
             case "like" -> Datasource.getConnection().prepareStatement(DELETE_ALL_LIKE_SQL);
             case "dislike" -> Datasource.getConnection().prepareStatement(DELETE_ALL_DISLIKE_SQL);
@@ -265,7 +264,7 @@ public class TweetRepositoryImp implements TweetRepository {
         }
     }
 
-    private List<Long> getActionOfTweet(long id, String which) throws SQLException {
+    private List<Long> getActionOfTweet(long id, String which) throws SQLException {//change
         PreparedStatement statement = switch (which) {
             case "like" -> Datasource.getConnection().prepareStatement(GET_LIKES_SQL);
             case "dislike" -> Datasource.getConnection().prepareStatement(GET_DISLIKES_SQL);
@@ -292,7 +291,7 @@ public class TweetRepositoryImp implements TweetRepository {
         return new ArrayList<>(ids);
     }
 
-    private void actionChoose(long tweetId, long userId, String which, String deleteLikeSql, String deleteDislikeSql, String deleteViewSql, String deleteRetweetSql) throws SQLException {
+    private void actionChoose(long tweetId, long userId, String which, String deleteLikeSql, String deleteDislikeSql, String deleteViewSql, String deleteRetweetSql) throws SQLException {//change
         PreparedStatement statement = switch (which) {
             case "like" -> Datasource.getConnection().prepareStatement(deleteLikeSql);
             case "dislike" -> Datasource.getConnection().prepareStatement(deleteDislikeSql);

@@ -10,7 +10,15 @@ public interface UserRepository {
 
     User read(long id) throws SQLException;
 
-    void updateProfile(User user, String newContent, String which) throws SQLException;
+    void updateBio(long id, String bio) throws SQLException;
+
+    void updateDisplayName(long id, String displayName) throws SQLException;
+
+    void updateEmail(long id, String email) throws SQLException;
+
+    void updateUsername(long id, String username) throws SQLException;
+
+    void updatePassword(long id, String password) throws SQLException;
 
     User findByUsername(String username) throws SQLException;
 
