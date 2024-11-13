@@ -14,6 +14,7 @@ import java.util.List;
 public class TweetRepositoryImp implements TweetRepository {
     //CRUD create read update delete
     static TagRepositoryImp tagRepositoryImp = new TagRepositoryImp();
+    static UserRepositoryImp userRepositoryImp = new UserRepositoryImp();
     //SQL
     private static final String INSERT_SQL = """
              INSERT INTO tweets(text,created_date ,user_id )
@@ -124,9 +125,8 @@ public class TweetRepositoryImp implements TweetRepository {
             SET isretweeted = true
             WHERE id = ?
             """;
-//this
 
-    public static Tweet read(long id) throws SQLException {
+    public Tweet read(long id) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(FIND_BY_ID_SQL)) {
             statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();
@@ -137,7 +137,7 @@ public class TweetRepositoryImp implements TweetRepository {
                 String text = resultSet.getString(2);
                 Date postedDate = resultSet.getDate(3);
                 long userId = resultSet.getLong(4);
-                User user = UserRepositoryImp.read(userId);
+                User user = userRepositoryImp.read(userId);
                 boolean isRetweeted = resultSet.getBoolean(5);
 
                 tweet = new Tweet(user, tweetId, text, postedDate);
@@ -251,10 +251,7 @@ public class TweetRepositoryImp implements TweetRepository {
         actionChoose(userId, tweetId, which, INSERT_like_SQL, INSERT_dislike_SQL, INSERT_view_SQL, INSERT_retweet_SQL);
     }
 
-
-    //----
-//delete statics
-    private static long getLastId(User user) throws SQLException {
+    private long getLastId(User user) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(GET_LAST_INDEX)) {
             statement.setLong(1, user.getId());
             ResultSet resultSet = statement.executeQuery();
@@ -267,7 +264,7 @@ public class TweetRepositoryImp implements TweetRepository {
         }
     }
 
-    private static List<Long> getActionOfTweet(long id, String which) throws SQLException {
+    private List<Long> getActionOfTweet(long id, String which) throws SQLException {
         PreparedStatement statement = switch (which) {
             case "like" -> Datasource.getConnection().prepareStatement(GET_LIKES_SQL);
             case "dislike" -> Datasource.getConnection().prepareStatement(GET_DISLIKES_SQL);
@@ -284,7 +281,7 @@ public class TweetRepositoryImp implements TweetRepository {
     }
 
 
-    private static List<Long> getIds(PreparedStatement statement) throws SQLException {
+    private List<Long> getIds(PreparedStatement statement) throws SQLException {
         ResultSet resultSet = statement.executeQuery();
         List<Long> ids = new LinkedList<>();
         while (resultSet.next()) {

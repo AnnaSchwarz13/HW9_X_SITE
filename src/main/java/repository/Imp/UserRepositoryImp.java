@@ -74,7 +74,7 @@ public class UserRepositoryImp implements UserRepository {
         }
     }
 
-    public static User read(long id) throws SQLException {
+    public User read(long id) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(FIND_BY_ID_SQL)) {
             statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();

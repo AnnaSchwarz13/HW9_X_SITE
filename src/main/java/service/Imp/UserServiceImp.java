@@ -66,7 +66,7 @@ public class UserServiceImp implements UserService {
 
     private void changePassword(String oldPassword, String newPassword) throws SQLException {
         if (passwordAuthenticationImp.authenticate(oldPassword.toCharArray(),authenticationServiceImp.getLoggedUser().getPassword())) {
-            userRepositoryImp.updateProfile(UserRepositoryImp.read(authenticationServiceImp.getLoggedUser().getId()), passwordAuthenticationImp.hash(newPassword.toCharArray()) ,"password");
+            userRepositoryImp.updateProfile(userRepositoryImp.read(authenticationServiceImp.getLoggedUser().getId()), passwordAuthenticationImp.hash(newPassword.toCharArray()) ,"password");
             System.out.println("Password changed successfully");
             return;
         }

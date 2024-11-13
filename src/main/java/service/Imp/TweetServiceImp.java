@@ -45,18 +45,18 @@ public class TweetServiceImp implements TweetService {
 
                 if (id == -1) {
                     break;
-                } else if (TweetRepositoryImp.read(id) != null) {
+                } else if (tweetRepositoryImp.read(id) != null) {
                     System.out.println("""
                             1.Like!
                             2.Dislike!
                             3.Retweet""");
                     int action = sc.nextInt();
                     if (action == 1) {
-                        if (!TweetRepositoryImp.read(id).getLikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
-                            tweetRepositoryImp.updateActions(TweetRepositoryImp.read(id).getId()
+                        if (!tweetRepositoryImp.read(id).getLikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
+                            tweetRepositoryImp.updateActions(tweetRepositoryImp.read(id).getId()
                                     , authenticationServiceImp.getLoggedUser().getId(), "like");
-                            TweetRepositoryImp.read(id).getLikes_ids().add(authenticationServiceImp.getLoggedUser().getId());
-                            if (TweetRepositoryImp.read(id).getDislikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
+                            tweetRepositoryImp.read(id).getLikes_ids().add(authenticationServiceImp.getLoggedUser().getId());
+                            if (tweetRepositoryImp.read(id).getDislikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
                                 tweetRepositoryImp.deleteActions(id, authenticationServiceImp.getLoggedUser().getId(), "dislike");
                                 System.out.println("liked!");
                             }
@@ -64,11 +64,11 @@ public class TweetServiceImp implements TweetService {
                             System.out.println("You are already liked!");
                         }
                     } else if (action == 2) {
-                        if (!TweetRepositoryImp.read(id).getDislikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
-                            tweetRepositoryImp.updateActions(TweetRepositoryImp.read(id).getId()
+                        if (!tweetRepositoryImp.read(id).getDislikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
+                            tweetRepositoryImp.updateActions(tweetRepositoryImp.read(id).getId()
                                     , authenticationServiceImp.getLoggedUser().getId(), "dislike");
-                            TweetRepositoryImp.read(id).getDislikes_ids().add(authenticationServiceImp.getLoggedUser().getId());
-                            if (TweetRepositoryImp.read(id).getLikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
+                            tweetRepositoryImp.read(id).getDislikes_ids().add(authenticationServiceImp.getLoggedUser().getId());
+                            if (tweetRepositoryImp.read(id).getLikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
                                 tweetRepositoryImp.deleteActions(id, authenticationServiceImp.getLoggedUser().getId(), "like");
                                 System.out.println("disliked!");
                             }
@@ -79,9 +79,9 @@ public class TweetServiceImp implements TweetService {
                     } else if (action == 3) {
                         System.out.println("replay:");
                         Tweet tweet = addTweet();
-                        tweetRepositoryImp.updateActions(TweetRepositoryImp.read(id).getId()
+                        tweetRepositoryImp.updateActions(tweetRepositoryImp.read(id).getId()
                                 , tweet.getId(), "retweet");
-                        TweetRepositoryImp.read(id).getRetweets().add(tweet.getId());
+                        tweetRepositoryImp.read(id).getRetweets().add(tweet.getId());
                         tweetRepositoryImp.setRetweet(tweet.getId());
                         System.out.println("retweeted!");
                     }
@@ -233,8 +233,8 @@ public class TweetServiceImp implements TweetService {
         }
         if (!choosenTweet.getRetweets().isEmpty()) {
             for (Long retweet : choosenTweet.getRetweets()) {
-                int tabs = countOfTabs(TweetRepositoryImp.read(retweet));
-                displayRetweet(TweetRepositoryImp.read(retweet), tabs);
+                int tabs = countOfTabs(tweetRepositoryImp.read(retweet));
+                displayRetweet(tweetRepositoryImp.read(retweet), tabs);
             }
         }
     }
@@ -243,7 +243,7 @@ public class TweetServiceImp implements TweetService {
         if (!tweet.getRetweets().isEmpty()) {
             tweetRepositoryImp.deleteRecords(tweet.getId(), "retweet");
             for (Long retweet : tweet.getRetweets()) {
-                deleteTweetRetweet(TweetRepositoryImp.read(retweet));
+                deleteTweetRetweet(tweetRepositoryImp.read(retweet));
             }
         }
         tweetRepositoryImp.deleteRecords(tweet.getId(), "like");

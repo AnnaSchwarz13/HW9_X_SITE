@@ -15,9 +15,14 @@ public class TagServiceImp implements TagService {
 @Override
     public List<Tag> setTweetTags() throws SQLException {
         List<Tag> tags = new ArrayList<>();
-        System.out.println("Please enter the tags of the tweet: \n at the end enter -1");
-        for (Tag tag : tagRepositoryImp.all()) {
-            System.out.println(tag.getTitle());
+        if(tagRepositoryImp.findCount()==0){
+            System.out.println("no tag yet");
+        }
+        else {
+            System.out.println("Please enter the tags of the tweet: \n at the end enter -1");
+            for (Tag tag : tagRepositoryImp.all()) {
+                System.out.println(tag.getTitle());
+            }
         }
         System.out.println("For add a tag enter 1");
         while (true) {

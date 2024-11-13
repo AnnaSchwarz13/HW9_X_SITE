@@ -53,7 +53,7 @@ public class TagRepositoryImp implements TagRepository {
         }
     }
 
-    public static Tag read(int id) throws SQLException {
+    public Tag read(int id) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(FIND_BY_ID_SQL)) {
             statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();

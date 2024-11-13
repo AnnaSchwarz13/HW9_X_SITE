@@ -101,8 +101,8 @@ public static void xSiteMenu(int option) throws SQLException {
             }
         }
         long id = scanner.nextLong();
-        if (TweetRepositoryImp.read(id).getUser().getId() == authenticationService.getLoggedUser().getId()) {
-            tweetService.changeDetailsOfTweet(TweetRepositoryImp.read(id));
+        if (tweetRepositoryImp.read(id).getUser().getId() == authenticationService.getLoggedUser().getId()) {
+            tweetService.changeDetailsOfTweet(tweetRepositoryImp.read(id));
         } else {
             System.out.println("Wrong id");
         }
