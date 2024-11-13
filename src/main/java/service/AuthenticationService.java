@@ -3,6 +3,8 @@ package service;
 
 import entities.User;
 
+import java.sql.SQLException;
+
 public interface AuthenticationService {
     void setLoggedUser(User user);
 
@@ -10,7 +12,7 @@ public interface AuthenticationService {
 
     void logout();
 
-    boolean isUsernameNew(String username);
+    boolean isUsernameNew(String username) throws SQLException;
 
-    boolean isEmailNew(String email);
+    boolean isEmailNew(String email) throws SQLException;
 }

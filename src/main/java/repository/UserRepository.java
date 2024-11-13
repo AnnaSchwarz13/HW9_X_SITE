@@ -1,6 +1,5 @@
 package repository;
 
-import entities.Tweet;
 import entities.User;
 
 import java.sql.SQLException;

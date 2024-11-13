@@ -57,6 +57,14 @@ public class UserRepositoryImp implements UserRepository {
     public static final String READ_ALL_SQL = """
             SELECT * FROM x_site_users
             """;
+    private static final String IS_USERNAME_NEW = """
+            SELECT id FROM x_site_users
+            WHERE username = ?
+            """;
+    private static final String IS_EMAIL_NEW = """
+            SELECT id FROM x_site_users
+            WHERE email = ?
+            """;
 
     @Override
     public User create(User user) throws SQLException {
@@ -144,6 +152,22 @@ public class UserRepositoryImp implements UserRepository {
                 user = read(resultSet.getLong(1));
             }
             return user;
+        }
+    }
+
+    public boolean isUsernameExist(String username) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(IS_USERNAME_NEW)) {
+            statement.setString(1, username);
+            ResultSet resultSet = statement.executeQuery();
+            return resultSet.next();
+        }
+    }
+
+    public boolean isEmailExist(String email) throws SQLException {
+        try (var statement = Datasource.getConnection().prepareStatement(IS_EMAIL_NEW)) {
+            statement.setString(1, email);
+            ResultSet resultSet = statement.executeQuery();
+            return resultSet.next();
         }
     }
 }

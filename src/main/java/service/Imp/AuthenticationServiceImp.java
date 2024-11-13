@@ -10,6 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.regex.Matcher;
@@ -39,28 +40,13 @@ public class AuthenticationServiceImp implements AuthenticationService {
     }
 
     @Override
-    public boolean isUsernameNew(String username) {//in repository
-        if (userRepositoryImp.all() != null) {
-            for (User checkingUser : userRepositoryImp.all()) {
-                if (checkingUser.getUsername().equals(username)) {
-                    return false;
-
-                }
-            }
-        }
-        return true;
+    public boolean isUsernameNew(String username) throws SQLException {
+        return !userRepositoryImp.isUsernameExist(username);
     }
 
     @Override
-    public boolean isEmailNew(String email) {
-        if (userRepositoryImp.all() != null) {
-            for (User checkingUser : userRepositoryImp.all()) {
-                if (checkingUser.getEmail().equals(email)) {
-                    return false;
-                }
-            }
-        }
-        return true;
+    public boolean isEmailNew(String email) throws SQLException {
+        return !userRepositoryImp.isEmailExist(email);
     }
 
 
