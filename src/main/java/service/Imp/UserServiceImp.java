@@ -62,7 +62,7 @@ public class UserServiceImp implements UserService {
         authenticationServiceImp.logout();
     }
 
-
+    @Override
     public void changePassword(String oldPassword, String newPassword) throws SQLException, UserException {
         if (passwordAuthenticationImp.authenticate(oldPassword.toCharArray(), authenticationServiceImp.getLoggedUser().getPassword())) {
             userRepositoryImp.updatePassword(authenticationServiceImp.getLoggedUser().getId(), passwordAuthenticationImp.hash(newPassword.toCharArray()));
@@ -72,6 +72,7 @@ public class UserServiceImp implements UserService {
         throw new UserException("Wrong password");
     }
 
+    @Override
     public void changeUsername(String oldUsername, String newUsername) throws SQLException, UserException {
         if (authenticationServiceImp.getLoggedUser().getUsername().equals(oldUsername)) {
             if (authenticationServiceImp.isUsernameNew(newUsername)) {
@@ -85,6 +86,7 @@ public class UserServiceImp implements UserService {
         throw new UserException("Wrong username");
     }
 
+    @Override
     public void changeEmail(String oldEmail, String newEmail) throws SQLException, UserException {
         if (authenticationServiceImp.getLoggedUser().getEmail().equals(oldEmail)) {
             if (authenticationServiceImp.isEmailNew(newEmail)) {
@@ -97,11 +99,13 @@ public class UserServiceImp implements UserService {
         throw new UserException("Wrong email");
     }
 
+    @Override
     public void changeBio(String newBio) throws SQLException {
         userRepositoryImp.updateBio(authenticationServiceImp.getLoggedUser().getId(), newBio);
         System.out.println("Successful!");
     }
 
+    @Override
     public void changeDisplayName(String newDisplayName) throws SQLException {
         userRepositoryImp.updateDisplayName(authenticationServiceImp.getLoggedUser().getId(), newDisplayName);
         System.out.println("Successful!");
