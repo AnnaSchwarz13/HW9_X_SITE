@@ -16,7 +16,7 @@ public interface UserRepository {
 
     boolean isEmailExist(String email) throws SQLException;
 
-    List<User> all();
+    List<User> all() throws SQLException;
 
     void updateBio(long id, String bio) throws SQLException;
 

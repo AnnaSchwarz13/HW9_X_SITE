@@ -1,7 +1,7 @@
 package repository.Imp;
 
 import entities.User;
-import repository.Datasource;
+import config.Datasource;
 import repository.UserRepository;
 
 import java.sql.Date;
@@ -104,7 +104,7 @@ public class UserRepositoryImp implements UserRepository {
     }
 
     @Override
-    public List<User> all() {
+    public List<User> all() throws SQLException{
         try (var statement = Datasource.getConnection().prepareStatement(READ_ALL_SQL)) {
             ResultSet resultSet = statement.executeQuery();
             List<User> users = new LinkedList<>();
@@ -114,8 +114,6 @@ public class UserRepositoryImp implements UserRepository {
             }
 
             return new ArrayList<>(users);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
 
     }

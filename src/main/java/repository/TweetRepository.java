@@ -29,11 +29,11 @@ public interface TweetRepository {
 
     Tweet read(long id) throws SQLException;
 
-    List<Tweet> getTweetsOfAUser(User user);
+    List<Tweet> getTweetsOfAUser(User user) throws SQLException;
 
     Tweet getTweetOfRetweet(Tweet retweet) throws SQLException;
 
-    List<Tweet> all();
+    List<Tweet> all() throws SQLException;
 
     void updateLike(long tweetId, long userId) throws SQLException;
 

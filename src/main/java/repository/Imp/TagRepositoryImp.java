@@ -2,7 +2,7 @@ package repository.Imp;
 
 import entities.Tweet;
 import entities.Tag;
-import repository.Datasource;
+import config.Datasource;
 import repository.TagRepository;
 
 import java.sql.ResultSet;
@@ -53,18 +53,15 @@ public class TagRepositoryImp implements TagRepository {
 
     //update
     @Override
-    public void setTweetTag(List<Tag> tags, Tweet tweet) {
+    public void setTweetTag(List<Tag> tags, Tweet tweet) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(INSET_TWEETS_TAGS)) {
             for (Tag tag : tags) {
                 statement.setLong(1, tweet.getId());
                 statement.setLong(2, tag.getId());
                 statement.execute();
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
-
     //read
     @Override
     public Tag read(int id) throws SQLException {
@@ -95,7 +92,7 @@ public class TagRepositoryImp implements TagRepository {
     }
 
     @Override
-    public List<Tag> all() {
+    public List<Tag> all() throws SQLException{
         try (var statement = Datasource.getConnection().prepareStatement(READ_ALL_SQL)) {
             ResultSet resultSet = statement.executeQuery();
             List<Tag> tags = new LinkedList<>();
@@ -106,8 +103,6 @@ public class TagRepositoryImp implements TagRepository {
                 tags.add(tag);
             }
             return new ArrayList<>(tags);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -125,7 +120,7 @@ public class TagRepositoryImp implements TagRepository {
     }
 
     @Override
-    public List<Tag> getTags(Tweet tweet) {
+    public List<Tag> getTags(Tweet tweet) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(FIND_TWEETS_TAG)) {
             statement.setLong(1, tweet.getId());
             ResultSet resultSet = statement.executeQuery();
@@ -135,8 +130,6 @@ public class TagRepositoryImp implements TagRepository {
                 tags.add(tag);
             }
             return new ArrayList<>(tags);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 

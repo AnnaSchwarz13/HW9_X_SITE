@@ -9,17 +9,17 @@ import java.util.List;
 public interface TagRepository {
     Tag create(Tag tag) throws SQLException;
 
-    void setTweetTag(List<Tag> tags, Tweet tweet);
+    void setTweetTag(List<Tag> tags, Tweet tweet) throws SQLException;
 
     Tag read(int id) throws SQLException;
 
     int findCount() throws SQLException;
 
-    List<Tag> all();
+    List<Tag> all() throws SQLException;
 
     Tag findTagByTile(String title) throws SQLException;
 
-    List<Tag> getTags(Tweet tweet);
+    List<Tag> getTags(Tweet tweet) throws SQLException;
 
     void delete(long id) throws SQLException;
 }

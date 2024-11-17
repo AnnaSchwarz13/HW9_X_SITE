@@ -2,7 +2,7 @@ package repository.Imp;
 
 import entities.Tweet;
 import entities.User;
-import repository.Datasource;
+import config.Datasource;
 import repository.TweetRepository;
 
 import java.sql.*;
@@ -160,21 +160,17 @@ public class TweetRepositoryImp implements TweetRepository {
     }
 
     @Override
-    public List<Tweet> all() {
+    public List<Tweet> all() throws SQLException{
         try (var statement = Datasource.getConnection().prepareStatement(ALL_TWEETS)) {
             return getTweets(statement);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public List<Tweet> getTweetsOfAUser(User user) {
+    public List<Tweet> getTweetsOfAUser(User user) throws SQLException{
         try (var statement = Datasource.getConnection().prepareStatement(FIND_ALL_USER_TWEETS_SQL)) {
             statement.setLong(1, user.getId());
             return getTweets(statement);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 

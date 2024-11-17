@@ -179,10 +179,7 @@ public static void xSiteMenu(int option) throws SQLException {
                 } else if (action == 2) {
                     System.out.println("Action canceled !");
                 }
-
             }
-
-
         } else {
             System.out.println("Wrong id");
         }

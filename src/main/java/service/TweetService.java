@@ -13,7 +13,7 @@ public interface TweetService {
 
     void displayRetweet(Tweet choosenTweet, int tabs) throws SQLException;
 
-    List<Tweet> getTweetsOfAUser(User user);
+    List<Tweet> getTweetsOfAUser(User user) throws SQLException;
 
     Tweet getTweetById(long id) throws SQLException;
 
@@ -21,7 +21,7 @@ public interface TweetService {
 
     void deleteTweetRetweet(Tweet tweet) throws SQLException;
 
-    List<Tweet> getAllTweets();
+    List<Tweet> getAllTweets() throws SQLException;
 
     boolean isTweetIdExist(long id) throws SQLException;
 

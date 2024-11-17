@@ -177,12 +177,12 @@ public class TweetServiceImp implements TweetService {
     }
 
     @Override
-    public List<Tweet> getAllTweets() {
+    public List<Tweet> getAllTweets() throws SQLException{
         return tweetRepositoryImp.all();
     }
 
     @Override
-    public List<Tweet> getTweetsOfAUser(User user) {
+    public List<Tweet> getTweetsOfAUser(User user) throws SQLException{
         return tweetRepositoryImp.getTweetsOfAUser(user);
     }
 
