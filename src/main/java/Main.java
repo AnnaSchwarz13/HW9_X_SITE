@@ -1,4 +1,3 @@
-import entities.Tag;
 import entities.Tweet;
 import exceptions.TagException;
 import exceptions.TweetException;
@@ -21,7 +20,7 @@ static TweetService tweetService = new TweetServiceImp();
 static TagService tagService = new TagServiceImp();
 static Scanner scanner = new Scanner(System.in);
 
-public static void main(String[] args) throws SQLException {
+public static void main(String[] args) throws SQLException, TagException {
 
     while (true) {
 
@@ -97,13 +96,13 @@ public static void loginMenu(int option) throws SQLException {
     }
 }
 
-public static void xSiteMenu(int option) throws SQLException {
+public static void xSiteMenu(int option) throws SQLException, TagException {
     if (option == 1) {
         showTweetList();
     } else if (option == 2) {
         System.out.println("Enter tweet text: ");
         String tweetText = scanner.nextLine() + scanner.nextLine();
-        List<Tag> brief = chooseTags();
+        List<Long> brief = chooseTags();
         tweetService.addTweet(tweetText, brief);
     } else if (option == 3) {
         System.out.println("there is your tweets enter id to edite");
@@ -132,21 +131,21 @@ public static void xSiteMenu(int option) throws SQLException {
                 tweetService.editTweetText(newText, tweetService.getTweetById(id));
 
             } else if (choose == 2) {
-                List<Tag> newTags = tweetService.getTweetById(id).getBrief();
+                List<Long> newTags = tweetService.getTweetById(id).getBrief();
                 while (true) {
                     if (newTags.isEmpty()) {
                         System.out.println("Your tweet have no tag yet");
                         System.out.println("for add more enter 1 \n and at the end -1");
                     } else {
                         System.out.println("Your tweet's tag(s) are there");
-                        for (Tag tag : newTags) {
-                            System.out.println(tag.getTitle());
+                        for (long tag : newTags) {
+                            System.out.println(tagService.getTagById(tag).getTitle());
                         }
                         System.out.println("for add more enter 1 \n remove one tag enter 2 \n and at the end -1");
                     }
                     int choose2 = scanner.nextInt();
                     if (choose2 == 1) {
-                        List<Tag> newTagsToAdd = chooseTags();
+                        List<Long> newTagsToAdd = chooseTags();
                             newTags.addAll(newTagsToAdd);
                     }
                     if (choose2 == 2) {
@@ -154,7 +153,13 @@ public static void xSiteMenu(int option) throws SQLException {
                         String tagName = scanner.nextLine() + scanner.nextLine();
                         try {
                             tagService.isTagExist(tagName);
-                            newTags.removeIf(tag -> tag.getTitle().equals(tagName));
+                            newTags.removeIf(tag -> {
+                                try {
+                                    return tagService.getTagById(tag).getTitle().equals(tagName);
+                                } catch (SQLException | TagException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            });
                         } catch (TagException e) {
                             System.out.println(e.getMessage());
                         }
@@ -284,7 +289,7 @@ public static void showTweetList() throws SQLException {
                     System.out.println("replay:");
                     System.out.println("Enter tweet text: ");
                     String tweetText = scanner.nextLine() + scanner.nextLine();
-                    List<Tag> brief = chooseTags();
+                    List<Long> brief = chooseTags();
                     tweetService.addRetweet(tweetText, id , brief);
                 }
             }
@@ -296,11 +301,11 @@ public static void showTweetList() throws SQLException {
 
 }
 
-public static List<Tag> chooseTags() throws SQLException {
-    List<Tag> tags = new ArrayList<>();
-    try {
-        tagService.showAllTags();
-        while (true) {
+public static List<Long> chooseTags() throws SQLException {
+    List<Long> tags = new ArrayList<>();
+    tagService.showAllTags();
+    while (true) {
+        try {
             String tagName = scanner.nextLine();
             if (tagName.equals("-1")) {
                 break;
@@ -310,14 +315,12 @@ public static List<Tag> chooseTags() throws SQLException {
                 String newTagName = scanner.nextLine();
                 tagService.addNewTag(newTagName);
             } else {
-                Tag newTag = tagService.addNewTagTweet(tagName);
-                if (newTag != null) {
-                    tags.add(newTag);
-                }
+                Long newTag = tagService.addNewTagTweet(tagName);
+                tags.add(newTag);
             }
+        } catch (TagException e) {
+            System.out.println(e.getMessage());
         }
-    } catch (TagException e) {
-        System.out.println(e.getMessage());
     }
-    return tags;
+    return tagService.removeDuplicates(tags);
 }

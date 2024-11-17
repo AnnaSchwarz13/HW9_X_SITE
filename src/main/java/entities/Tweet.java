@@ -15,7 +15,7 @@ public class Tweet {
     private User user;
     private String content;
     private Date createDate;
-    private List<Tag> brief;
+    private List<Long> brief;
     private List<Long> likes_ids;
     private List<Long> dislikes_ids;
     private List<Long> views_ids;

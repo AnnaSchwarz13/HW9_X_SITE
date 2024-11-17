@@ -9,11 +9,15 @@ import java.util.List;
 public interface TagService {
     void isTagExist(String title) throws SQLException, TagException;
 
-    void updateTagList(List<Tag> tags , long tweetId) throws SQLException;
+    void updateTagList(List<Long> tags , long tweetId) throws SQLException;
 
-    void showAllTags() throws SQLException, TagException;
+    void showAllTags() throws SQLException;
 
     void addNewTag(String newTagName) throws SQLException, TagException;
 
-    Tag addNewTagTweet(String newTagName) throws SQLException, TagException;
+    long addNewTagTweet(String newTagName) throws SQLException, TagException;
+
+    Tag getTagById(long id) throws SQLException, TagException;
+
+    List<Long> removeDuplicates(List<Long> tags);
 }

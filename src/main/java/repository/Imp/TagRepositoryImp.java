@@ -54,18 +54,18 @@ public class TagRepositoryImp implements TagRepository {
 
     //update
     @Override
-    public void setTweetTag(List<Tag> tags, Tweet tweet) throws SQLException {
+    public void setTweetTag(List<Long> tags, Tweet tweet) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(INSET_TWEETS_TAGS)) {
-            for (Tag tag : tags) {
+            for (long tag : tags) {
                 statement.setLong(1, tweet.getId());
-                statement.setLong(2, tag.getId());
+                statement.setLong(2, tag);
                 statement.execute();
             }
         }
     }
     //read
     @Override
-    public Tag read(int id) throws SQLException {
+    public Tag read(long id) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(FIND_BY_ID_SQL)) {
             statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();
@@ -124,14 +124,14 @@ public class TagRepositoryImp implements TagRepository {
     }
 
     @Override
-    public List<Tag> getTags(Tweet tweet) throws SQLException {
+    public List<Long> getTags(Tweet tweet) throws SQLException {
         try (var statement = Datasource.getConnection().prepareStatement(FIND_TWEETS_TAG)) {
             statement.setLong(1, tweet.getId());
             ResultSet resultSet = statement.executeQuery();
-            List<Tag> tags = new LinkedList<>();
+            List<Long> tags = new LinkedList<>();
             while (resultSet.next()) {
-                Tag tag = read(resultSet.getInt(1));
-                tags.add(tag);
+                long id =resultSet.getLong(1);
+                tags.add(id);
             }
             return new ArrayList<>(tags);
         }

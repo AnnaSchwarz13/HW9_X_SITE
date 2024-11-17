@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface TweetService {
-    Tweet addTweet(String tweetText, List<Tag> brief) throws SQLException;
+    Tweet addTweet(String tweetText, List<Long> brief) throws SQLException;
 
     void displayTweet(Tweet choosenTweet) throws SQLException;
 
@@ -29,5 +29,5 @@ public interface TweetService {
 
     void addActions(int action, long id) throws SQLException, TweetException;
 
-    void addRetweet(String retweetText, long id , List<Tag> brief) throws SQLException;
+    void addRetweet(String retweetText, long id , List<Long> brief) throws SQLException;
 }

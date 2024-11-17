@@ -1,6 +1,5 @@
 package service.Imp;
 
-import entities.Tag;
 import entities.Tweet;
 import entities.User;
 import exceptions.TweetException;
@@ -18,9 +17,8 @@ public class TweetServiceImp implements TweetService {
     AuthenticationServiceImp authenticationServiceImp = new AuthenticationServiceImp();
 
     @Override
-    public Tweet addTweet(String tweetText, List<Tag> brief) throws SQLException {
-        Tweet tweet= null;
-            tweet = new Tweet(authenticationServiceImp.getLoggedUser(), tweetText);
+    public Tweet addTweet(String tweetText, List<Long> brief) throws SQLException {
+        Tweet tweet = new Tweet(authenticationServiceImp.getLoggedUser(), tweetText);
             tweet = tweetRepositoryImp.create(tweet);
             tagRepositoryImp.setTweetTag(brief, tweet);
             System.out.println("Tweeted!!");
@@ -29,7 +27,7 @@ public class TweetServiceImp implements TweetService {
     }
 
     @Override
-    public void addRetweet(String retweetText, long id, List<Tag> brief) throws SQLException {
+    public void addRetweet(String retweetText, long id, List<Long> brief) throws SQLException {
         Tweet tweet = addTweet(retweetText, brief);
         tweetRepositoryImp.updateRetweet(tweetRepositoryImp.read(id).getId(), tweet.getId());
         tweetRepositoryImp.read(id).getRetweets().add(tweet.getId());
@@ -78,7 +76,7 @@ public class TweetServiceImp implements TweetService {
             System.out.println("Tweet at  " + choosenTweet.getCreateDate());
             System.out.println("\n" + choosenTweet.getContent());
             if (!choosenTweet.getBrief().isEmpty()) {
-                System.out.println("\n brief: " + choosenTweet.getBrief());
+                System.out.println("\nbrief: " + tagServiceImp.idToTags(choosenTweet.getBrief()));
             }
             System.out.print("likes: " + choosenTweet.getLikes_ids().size());
             System.out.println("\tdislikes: " + choosenTweet.getDislikes_ids().size());
@@ -115,7 +113,7 @@ public class TweetServiceImp implements TweetService {
                 for (int i = 0; i < tabs; i++) {
                     System.out.print("\t");
                 }
-                System.out.println("brief: " + choosenTweet.getBrief());
+                System.out.println("brief: " + tagServiceImp.idToTags(choosenTweet.getBrief()));
             }
             for (int i = 0; i < tabs; i++) {
                 System.out.print("\t");
