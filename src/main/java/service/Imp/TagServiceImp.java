@@ -17,10 +17,10 @@ public class TagServiceImp implements TagService {
     TweetRepositoryImp tweetRepositoryImp = new TweetRepositoryImp();
 
     @Override
-    public List<Tag> setTweetTags() throws SQLException {
+    public List<Tag> setTweetTags() throws SQLException, TagException {
         List<Tag> tags = new ArrayList<>();
         if (tagRepositoryImp.findCount() == 0) {
-            System.out.println("no tag yet");
+            throw new TagException("no tag yet");
         } else {
             System.out.println("Please enter the tags of the tweet: \n at the end enter -1");
             for (Tag tag : tagRepositoryImp.all()) {
@@ -37,7 +37,7 @@ public class TagServiceImp implements TagService {
                 System.out.println("Please enter your tag name");
                 String newTagName = this.sc.nextLine();
                 if (tagRepositoryImp.findTagByTile(newTagName) != null) {
-                    System.out.println("Tag already exists");
+                    throw new TagException("Tag already exists");
                 } else {
                     Tag newTag = new Tag(newTagName);
                     tagRepositoryImp.create(newTag);

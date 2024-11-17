@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface TagService {
-    List<Tag> setTweetTags() throws SQLException;
+    List<Tag> setTweetTags() throws SQLException, TagException;
     void isTagExist(String title) throws SQLException, TagException;
     void updateTagList(List<Tag> tags , long tweetId) throws SQLException;
 }

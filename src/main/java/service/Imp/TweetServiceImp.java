@@ -3,6 +3,8 @@ package service.Imp;
 import entities.Tag;
 import entities.Tweet;
 import entities.User;
+import exceptions.TagException;
+import exceptions.TweetException;
 import repository.Imp.TagRepositoryImp;
 import repository.Imp.TweetRepositoryImp;
 import service.TweetService;
@@ -18,11 +20,17 @@ public class TweetServiceImp implements TweetService {
 
     @Override
     public Tweet addTweet(String tweetText) throws SQLException {
-        List<Tag> brief = tagServiceImp.setTweetTags();
-        Tweet tweet = new Tweet(authenticationServiceImp.getLoggedUser(), tweetText);
-        tweet = tweetRepositoryImp.create(tweet);
-        tagRepositoryImp.setTweetTag(brief, tweet);
-        System.out.println("Tweeted!!");
+        Tweet tweet= null;
+        try {
+            List<Tag> brief = tagServiceImp.setTweetTags();
+            tweet = new Tweet(authenticationServiceImp.getLoggedUser(), tweetText);
+            tweet = tweetRepositoryImp.create(tweet);
+            tagRepositoryImp.setTweetTag(brief, tweet);
+            System.out.println("Tweeted!!");
+
+        }catch (TagException e){
+            System.out.println(e.getMessage());
+        }
         return tweet;
     }
 
@@ -36,7 +44,7 @@ public class TweetServiceImp implements TweetService {
     }
 
     @Override
-    public void addActions(int action, long id) throws SQLException {
+    public void addActions(int action, long id) throws SQLException, TweetException {
         if (action == 1) {
             if (!tweetRepositoryImp.read(id).getLikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
                 tweetRepositoryImp.updateLike(tweetRepositoryImp.read(id).getId(), authenticationServiceImp.getLoggedUser().getId());
@@ -46,7 +54,7 @@ public class TweetServiceImp implements TweetService {
                     System.out.println("liked!");
                 }
             } else {
-                System.out.println("You are already liked!");
+                throw new TweetException("You are already liked!");
             }
         } else if (action == 2) {
             if (!tweetRepositoryImp.read(id).getDislikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
@@ -57,7 +65,7 @@ public class TweetServiceImp implements TweetService {
                     System.out.println("disliked!");
                 }
             } else {
-                System.out.println("You are already disliked!");
+               throw new TweetException("You are already disliked!");
             }
         }
     }

@@ -2,6 +2,7 @@ package service;
 
 import entities.Tweet;
 import entities.User;
+import exceptions.TweetException;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -25,7 +26,7 @@ public interface TweetService {
 
     boolean isTweetIdExist(long id) throws SQLException;
 
-    void addActions(int action, long id) throws SQLException;
+    void addActions(int action, long id) throws SQLException, TweetException;
 
     void addRetweet(String retweetText, long id) throws SQLException;
 }

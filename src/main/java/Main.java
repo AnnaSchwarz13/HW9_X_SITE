@@ -1,6 +1,7 @@
 import entities.Tag;
 import entities.Tweet;
 import exceptions.TagException;
+import exceptions.TweetException;
 import exceptions.UserException;
 import service.Imp.AuthenticationServiceImp;
 import service.Imp.TagServiceImp;
@@ -143,8 +144,12 @@ public static void xSiteMenu(int option) throws SQLException {
                     }
                     int choose2 = scanner.nextInt();
                     if (choose2 == 1) {
-                        List<Tag> newTagsToAdd = tagService.setTweetTags();
-                        newTags.addAll(newTagsToAdd);
+                        try {
+                            List<Tag> newTagsToAdd = tagService.setTweetTags();
+                            newTags.addAll(newTagsToAdd);
+                        }catch (TagException e){
+                            System.out.println(e.getMessage());
+                        }
                     }
                     if (choose2 == 2) {
                         System.out.println("Please enter a tag name to remove");
@@ -274,7 +279,11 @@ public static void showTweetList() throws SQLException {
                         2.Dislike!
                         3.Retweet""");
                 int action = scanner.nextInt();
-                tweetService.addActions(action, id);
+                try {
+                    tweetService.addActions(action, id);
+                }catch (TweetException e) {
+                    System.out.println(e.getMessage());
+                }
                 if (action == 3) {
                     System.out.println("replay:");
                     System.out.println("Enter tweet text: ");
