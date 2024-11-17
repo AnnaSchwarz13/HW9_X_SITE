@@ -1,16 +1,22 @@
+import entities.Tag;
 import entities.Tweet;
+import exceptions.TagException;
 import exceptions.UserException;
 import service.Imp.AuthenticationServiceImp;
+import service.Imp.TagServiceImp;
 import service.Imp.TweetServiceImp;
 import service.Imp.UserServiceImp;
+import service.TagService;
 import service.TweetService;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Scanner;
 
 static AuthenticationServiceImp authenticationService = new AuthenticationServiceImp();
 static UserServiceImp userService = new UserServiceImp();
 static TweetService tweetService = new TweetServiceImp();
+static TagService tagService = new TagServiceImp();
 static Scanner scanner = new Scanner(System.in);
 
 public static void main(String[] args) throws SQLException {
@@ -91,9 +97,11 @@ public static void loginMenu(int option) throws SQLException {
 
 public static void xSiteMenu(int option) throws SQLException {
     if (option == 1) {
-        tweetService.showTweetList();
+        showTweetList();
     } else if (option == 2) {
-        tweetService.addTweet();
+        System.out.println("Enter tweet text: ");
+        String tweetText = scanner.nextLine() + scanner.nextLine();
+        tweetService.addTweet(tweetText);
     } else if (option == 3) {
         System.out.println("there is your tweets enter id to edite");
         for (Tweet tweet : tweetService.getTweetsOfAUser(authenticationService.getLoggedUser())) {
@@ -106,7 +114,75 @@ public static void xSiteMenu(int option) throws SQLException {
         }
         long id = scanner.nextLong();
         if (authenticationService.isTweetForLoggedInUser(id)) {
-            tweetService.changeDetailsOfTweet(tweetService.getTweetById(id));
+            System.out.println("Which do you want to edit?");
+            System.out.println("""
+                            1.Edit content
+                            2.Edit TagList\s
+                            3.delete
+                    """
+            );
+            int choose = scanner.nextInt();
+            if (choose == 1) {
+                System.out.println("Please enter the new content:");
+                String newText = scanner.nextLine() + scanner.nextLine();
+                newText = newText + "\n(edited)";
+                tweetService.editTweetText(newText, tweetService.getTweetById(id));
+
+            } else if (choose == 2) {
+                List<Tag> newTags = tweetService.getTweetById(id).getBrief();
+                while (true) {
+                    if (newTags.isEmpty()) {
+                        System.out.println("Your tweet have no tag yet");
+                        System.out.println("for add more enter 1 \n and at the end -1");
+                    } else {
+                        System.out.println("Your tweet's tag(s) are there");
+                        for (Tag tag : newTags) {
+                            System.out.println(tag.getTitle());
+                        }
+                        System.out.println("for add more enter 1 \n remove one tag enter 2 \n and at the end -1");
+                    }
+                    int choose2 = scanner.nextInt();
+                    if (choose2 == 1) {
+                        List<Tag> newTagsToAdd = tagService.setTweetTags();
+                        newTags.addAll(newTagsToAdd);
+                    }
+                    if (choose2 == 2) {
+                        System.out.println("Please enter a tag name to remove");
+                        String tagName = scanner.nextLine() + scanner.nextLine();
+                        try {
+                            tagService.isTagExist(tagName);
+                            newTags.removeIf(tag -> tag.getTitle().equals(tagName));
+                        } catch (TagException e) {
+                            System.out.println(e.getMessage());
+                        }
+                    }
+                    if (choose2 == -1) {
+                        tagService.updateTagList(newTags, id);
+                        break;
+                    }
+                }
+            } else if (choose == 3) {
+                System.out.println("Warning!\nthis is your tweet it will be removed \nwith all like and e.x.");
+                if (!tweetService.getTweetById(id).isRetweeted())
+                    tweetService.displayTweet(tweetService.getTweetById(id));
+                else {
+                    System.out.println("---------");
+                    tweetService.displayRetweet(tweetService.getTweetById(id), 0);
+                }
+                System.out.println("""
+                        1.CONFIRM
+                        2.REJECT""");
+                int action = scanner.nextInt();
+                if (action == 1) {
+                    tweetService.deleteTweetRetweet(tweetService.getTweetById(id));
+                    System.out.println("Tweet successfully removed");
+                } else if (action == 2) {
+                    System.out.println("Action canceled !");
+                }
+
+            }
+
+
         } else {
             System.out.println("Wrong id");
         }
@@ -179,3 +255,40 @@ public static void changeProfile() {
         }
     }
 }
+
+public static void showTweetList() throws SQLException {
+    if (tweetService.getAllTweets().isEmpty()) {
+        System.out.println("there is no Tweet");
+    } else {
+        while (true) {
+            System.out.println("for more action enter tweet's id else -1 ");
+
+            for (Tweet tempTweet : tweetService.getAllTweets()) {
+                tweetService.displayTweet(tempTweet);
+            }
+
+            long id = scanner.nextLong();
+
+            if (id == -1) {
+                break;
+            } else if (tweetService.isTweetIdExist(id)) {
+                System.out.println("""
+                        1.Like!
+                        2.Dislike!
+                        3.Retweet""");
+                int action = scanner.nextInt();
+                tweetService.addActions(action, id);
+                if (action == 3) {
+                    System.out.println("replay:");
+                    System.out.println("Enter tweet text: ");
+                    String tweetText = scanner.nextLine() + scanner.nextLine();
+                    tweetService.addRetweet(tweetText,id);
+                }
+            } else {
+                System.out.println("wrong id");
+            }
+        }
+
+    }
+}
+
