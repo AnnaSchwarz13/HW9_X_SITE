@@ -1,4 +1,5 @@
 import entities.Tweet;
+import exceptions.UserException;
 import service.Imp.AuthenticationServiceImp;
 import service.Imp.TweetServiceImp;
 import service.Imp.UserServiceImp;
@@ -46,15 +47,21 @@ public static void loginMenu(int option) throws SQLException {
         String username = scanner.next();
         System.out.println("enter your password:");
         String password = scanner.next();
-        userService.userLoginUsername(username, password);
-
+        try {
+            userService.userLoginUsername(username, password);
+        } catch (UserException e) {
+            System.out.println(e.getMessage());
+        }
     } else if (option == 2) {
         System.out.println("enter your email :");
         String email = scanner.next();
         System.out.println("enter your password:");
         String password = scanner.next();
-        userService.userLoginEmail(email, password);
-
+        try {
+            userService.userLoginEmail(email, password);
+        } catch (UserException e) {
+            System.out.println(e.getMessage());
+        }
     } else if (option == 3) {
         while (true) {
             System.out.println("enter your username:");
@@ -104,9 +111,71 @@ public static void xSiteMenu(int option) throws SQLException {
             System.out.println("Wrong id");
         }
     } else if (option == 4) {
-        userService.changeProfile();
+        changeProfile();
     } else if (option == 5) {
         System.out.println("See you dear " + authenticationService.getLoggedUser().getDisplayName());
         userService.userLogout();
+    }
+}
+
+public static void changeProfile() {
+    System.out.println("Select to change");
+    System.out.println("""
+            1.Username
+            2.Email
+            3.Password
+            4.DisplayName
+            5.Bio""");
+    int option = scanner.nextInt();
+
+    if (option == 1) {
+        System.out.println("Enter old Username");
+        String username = scanner.next();
+        System.out.println("Enter new username");
+        String newUsername = scanner.next();
+        try {
+            userService.changeUsername(username, newUsername);
+        } catch (UserException | SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    } else if (option == 2) {
+        System.out.println("Enter old email");
+        String oldEmail = scanner.next();
+        System.out.println("Enter new email");
+        String newEmail = scanner.next();
+        try {
+            userService.changeEmail(oldEmail, newEmail);
+        } catch (UserException e) {
+            System.out.println(e.getMessage());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    } else if (option == 3) {
+        System.out.println("Enter old password");
+        String oldPassword = scanner.next();
+        System.out.println("Enter new password");
+        String newPassword = scanner.next();
+        try {
+            userService.changePassword(oldPassword, newPassword);
+        } catch (UserException | SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    } else if (option == 4) {
+        System.out.println("Enter new DisplayName");
+        String newDisplayName = scanner.next();
+        try {
+            userService.changeDisplayName(newDisplayName);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+    } else if (option == 5) {
+        System.out.println("Enter new Bio");
+        String newBio = scanner.next();
+        try {
+            userService.changeBio(newBio);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
