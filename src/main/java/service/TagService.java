@@ -17,7 +17,7 @@ public interface TagService {
 
     long addNewTagTweet(String newTagName) throws SQLException, TagException;
 
-    Tag getTagById(long id) throws SQLException, TagException;
+    Tag getTagById(long id) throws SQLException;
 
     List<Long> removeDuplicates(List<Long> tags);
 }

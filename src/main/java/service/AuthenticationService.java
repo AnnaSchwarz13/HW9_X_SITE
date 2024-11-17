@@ -2,6 +2,8 @@ package service;
 
 
 import entities.User;
+import exceptions.TweetException;
+import exceptions.UserException;
 
 import java.sql.SQLException;
 
@@ -12,9 +14,9 @@ public interface AuthenticationService {
 
     void logout();
 
-    boolean isUsernameNew(String username) throws SQLException;
+    boolean isUsernameNew(String username) throws SQLException, UserException;
 
-    boolean isEmailNew(String email) throws SQLException;
+    boolean isEmailNew(String email) throws SQLException, UserException;
 
-    boolean isTweetForLoggedInUser(Long id) throws SQLException;
+    boolean isTweetForLoggedInUser(Long id) throws SQLException, TweetException;
 }

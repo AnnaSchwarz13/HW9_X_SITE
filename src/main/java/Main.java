@@ -20,7 +20,7 @@ static TweetService tweetService = new TweetServiceImp();
 static TagService tagService = new TagServiceImp();
 static Scanner scanner = new Scanner(System.in);
 
-public static void main(String[] args) throws SQLException, TagException {
+public static void main(String[] args) throws SQLException{
 
     while (true) {
 
@@ -73,30 +73,36 @@ public static void loginMenu(int option) throws SQLException {
         while (true) {
             System.out.println("enter your username:");
             String username = scanner.next();
-            if (authenticationService.isUsernameNew(username)) {
-                System.out.println("enter your password:");
-                String password = scanner.next();
-                while (true) {
-                    System.out.println("enter your email :");
-                    String email = scanner.next();
-                    if (authenticationService.isEmailNew(email)) {
-                        System.out.println("enter your Bio :");
-                        String bio = scanner.next();
-                        System.out.println("enter your display name :\n(this name will show for other users)");
-                        String displayName = scanner.next();
-                        userService.userSignup(username, password, email, bio, displayName);
-                        break;
+            try {
+                if (authenticationService.isUsernameNew(username)) {
+                    System.out.println("enter your password:");
+                    String password = scanner.next();
+                    while (true) {
+                        System.out.println("enter your email :");
+                        String email = scanner.next();
+                        try {
+                            if (authenticationService.isEmailNew(email)) {
+                                System.out.println("enter your Bio :");
+                                String bio = scanner.next();
+                                System.out.println("enter your display name :\n(this name will show for other users)");
+                                String displayName = scanner.next();
+                                userService.userSignup(username, password, email, bio, displayName);
+                                break;
+                            }
+                        }catch (UserException e) {
+                            System.out.println(e.getMessage());
+                        }
                     }
-                    System.out.println("email is already taken");
+                    break;
                 }
-                break;
+            }catch (UserException e) {
+                System.out.println(e.getMessage());
             }
-            System.out.println("username is already taken");
         }
     }
 }
 
-public static void xSiteMenu(int option) throws SQLException, TagException {
+public static void xSiteMenu(int option) throws SQLException{
     if (option == 1) {
         showTweetList();
     } else if (option == 2) {
@@ -115,6 +121,7 @@ public static void xSiteMenu(int option) throws SQLException, TagException {
             }
         }
         long id = scanner.nextLong();
+        try{
         if (authenticationService.isTweetForLoggedInUser(id)) {
             System.out.println("Which do you want to edit?");
             System.out.println("""
@@ -146,7 +153,7 @@ public static void xSiteMenu(int option) throws SQLException, TagException {
                     int choose2 = scanner.nextInt();
                     if (choose2 == 1) {
                         List<Long> newTagsToAdd = chooseTags();
-                            newTags.addAll(newTagsToAdd);
+                        newTags.addAll(newTagsToAdd);
                     }
                     if (choose2 == 2) {
                         System.out.println("Please enter a tag name to remove");
@@ -156,7 +163,7 @@ public static void xSiteMenu(int option) throws SQLException, TagException {
                             newTags.removeIf(tag -> {
                                 try {
                                     return tagService.getTagById(tag).getTitle().equals(tagName);
-                                } catch (SQLException | TagException e) {
+                                } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                             });
@@ -188,8 +195,9 @@ public static void xSiteMenu(int option) throws SQLException, TagException {
                     System.out.println("Action canceled !");
                 }
             }
-        } else {
-            System.out.println("Wrong id");
+        }
+        } catch (TweetException e){
+            System.out.println(e.getMessage());
         }
     } else if (option == 4) {
         changeProfile();

@@ -1,6 +1,8 @@
 package service.Imp;
 
 import entities.User;
+import exceptions.TweetException;
+import exceptions.UserException;
 import repository.Imp.TweetRepositoryImp;
 import repository.Imp.UserRepositoryImp;
 import service.AuthenticationService;
@@ -45,17 +47,26 @@ public class AuthenticationServiceImp implements AuthenticationService {
     }
 
     @Override
-    public boolean isUsernameNew(String username) throws SQLException {
+    public boolean isUsernameNew(String username) throws SQLException, UserException {
+        if(userRepositoryImp.isUsernameExist(username)) {
+            throw new UserException("Username is already exist!");
+        }
         return !userRepositoryImp.isUsernameExist(username);
     }
 
     @Override
-    public boolean isEmailNew(String email) throws SQLException {
+    public boolean isEmailNew(String email) throws SQLException, UserException {
+        if(userRepositoryImp.isEmailExist(email)) {
+            throw new UserException("Email already exist!");
+        }
         return !userRepositoryImp.isEmailExist(email);
     }
 
     @Override
-    public boolean isTweetForLoggedInUser(Long id) throws SQLException {
+    public boolean isTweetForLoggedInUser(Long id) throws SQLException, TweetException {
+        if(id<0||tweetRepositoryImp.read(id).getUser().getId()!=loggedInUser.getId()) {
+            throw new TweetException("Wrong id");
+        }
         return tweetRepositoryImp.read(id).getUser().getId() == loggedInUser.getId();
     }
 
