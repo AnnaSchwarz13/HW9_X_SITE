@@ -3,7 +3,6 @@ package service.Imp;
 import entities.Tag;
 import entities.Tweet;
 import entities.User;
-import exceptions.TagException;
 import exceptions.TweetException;
 import repository.Imp.TagRepositoryImp;
 import repository.Imp.TweetRepositoryImp;
@@ -19,24 +18,19 @@ public class TweetServiceImp implements TweetService {
     AuthenticationServiceImp authenticationServiceImp = new AuthenticationServiceImp();
 
     @Override
-    public Tweet addTweet(String tweetText) throws SQLException {
+    public Tweet addTweet(String tweetText, List<Tag> brief) throws SQLException {
         Tweet tweet= null;
-        try {
-            List<Tag> brief = tagServiceImp.setTweetTags();
             tweet = new Tweet(authenticationServiceImp.getLoggedUser(), tweetText);
             tweet = tweetRepositoryImp.create(tweet);
             tagRepositoryImp.setTweetTag(brief, tweet);
             System.out.println("Tweeted!!");
 
-        }catch (TagException e){
-            System.out.println(e.getMessage());
-        }
         return tweet;
     }
 
     @Override
-    public void addRetweet(String retweetText, long id) throws SQLException {
-        Tweet tweet = addTweet(retweetText);
+    public void addRetweet(String retweetText, long id, List<Tag> brief) throws SQLException {
+        Tweet tweet = addTweet(retweetText, brief);
         tweetRepositoryImp.updateRetweet(tweetRepositoryImp.read(id).getId(), tweet.getId());
         tweetRepositoryImp.read(id).getRetweets().add(tweet.getId());
         tweetRepositoryImp.setRetweet(tweet.getId());
@@ -135,7 +129,7 @@ public class TweetServiceImp implements TweetService {
             for (int i = 0; i < tabs; i++) {
                 System.out.print("\t");
             }
-            System.out.println("viewed " + choosenTweet.getViews_ids().size() + " times");
+            System.out.println("viewed " + choosenTweet.getViews_ids().size() + " times\n");
         }
         addView(choosenTweet);
 
@@ -185,7 +179,10 @@ public class TweetServiceImp implements TweetService {
     }
 
     @Override
-    public List<Tweet> getAllTweets() throws SQLException{
+    public List<Tweet> getAllTweets() throws SQLException, TweetException {
+        if (tweetRepositoryImp.all().isEmpty()) {
+            throw new TweetException("There is to tweet yet");
+        }
         return tweetRepositoryImp.all();
     }
 
@@ -200,7 +197,10 @@ public class TweetServiceImp implements TweetService {
     }
 
     @Override
-    public boolean isTweetIdExist(long id) throws SQLException {
+    public boolean isTweetIdExist(long id) throws SQLException, TweetException {
+        if (tweetRepositoryImp.read(id) == null) {
+            throw new TweetException("Tweet dose not exist");
+        }
         return tweetRepositoryImp.read(id) != null;
     }
 }

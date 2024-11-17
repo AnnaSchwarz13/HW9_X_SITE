@@ -11,6 +11,7 @@ import service.TagService;
 import service.TweetService;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -81,7 +82,7 @@ public static void loginMenu(int option) throws SQLException {
                     String email = scanner.next();
                     if (authenticationService.isEmailNew(email)) {
                         System.out.println("enter your Bio :");
-                        String bio = scanner.next() + scanner.next();
+                        String bio = scanner.next();
                         System.out.println("enter your display name :\n(this name will show for other users)");
                         String displayName = scanner.next();
                         userService.userSignup(username, password, email, bio, displayName);
@@ -102,7 +103,8 @@ public static void xSiteMenu(int option) throws SQLException {
     } else if (option == 2) {
         System.out.println("Enter tweet text: ");
         String tweetText = scanner.nextLine() + scanner.nextLine();
-        tweetService.addTweet(tweetText);
+        List<Tag> brief = chooseTags();
+        tweetService.addTweet(tweetText, brief);
     } else if (option == 3) {
         System.out.println("there is your tweets enter id to edite");
         for (Tweet tweet : tweetService.getTweetsOfAUser(authenticationService.getLoggedUser())) {
@@ -144,12 +146,8 @@ public static void xSiteMenu(int option) throws SQLException {
                     }
                     int choose2 = scanner.nextInt();
                     if (choose2 == 1) {
-                        try {
-                            List<Tag> newTagsToAdd = tagService.setTweetTags();
+                        List<Tag> newTagsToAdd = chooseTags();
                             newTags.addAll(newTagsToAdd);
-                        }catch (TagException e){
-                            System.out.println(e.getMessage());
-                        }
                     }
                     if (choose2 == 2) {
                         System.out.println("Please enter a tag name to remove");
@@ -259,9 +257,7 @@ public static void changeProfile() {
 }
 
 public static void showTweetList() throws SQLException {
-    if (tweetService.getAllTweets().isEmpty()) {
-        System.out.println("there is no Tweet");
-    } else {
+    try {
         while (true) {
             System.out.println("for more action enter tweet's id else -1 ");
 
@@ -281,20 +277,47 @@ public static void showTweetList() throws SQLException {
                 int action = scanner.nextInt();
                 try {
                     tweetService.addActions(action, id);
-                }catch (TweetException e) {
+                } catch (TweetException e) {
                     System.out.println(e.getMessage());
                 }
                 if (action == 3) {
                     System.out.println("replay:");
                     System.out.println("Enter tweet text: ");
                     String tweetText = scanner.nextLine() + scanner.nextLine();
-                    tweetService.addRetweet(tweetText,id);
+                    List<Tag> brief = chooseTags();
+                    tweetService.addRetweet(tweetText, id , brief);
                 }
-            } else {
-                System.out.println("wrong id");
             }
         }
 
+    } catch (TweetException e) {
+        System.out.println(e.getMessage());
     }
+
 }
 
+public static List<Tag> chooseTags() throws SQLException {
+    List<Tag> tags = new ArrayList<>();
+    try {
+        tagService.showAllTags();
+        while (true) {
+            String tagName = scanner.nextLine();
+            if (tagName.equals("-1")) {
+                break;
+            }
+            if (tagName.equals("1")) {
+                System.out.println("Please enter your tag name");
+                String newTagName = scanner.nextLine();
+                tagService.addNewTag(newTagName);
+            } else {
+                Tag newTag = tagService.addNewTagTweet(tagName);
+                if (newTag != null) {
+                    tags.add(newTag);
+                }
+            }
+        }
+    } catch (TagException e) {
+        System.out.println(e.getMessage());
+    }
+    return tags;
+}

@@ -2,6 +2,7 @@ package repository;
 
 import entities.Tag;
 import entities.Tweet;
+import exceptions.TagException;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -17,7 +18,7 @@ public interface TagRepository {
 
     List<Tag> all() throws SQLException;
 
-    Tag findTagByTile(String title) throws SQLException;
+    Tag findTagByTile(String title) throws SQLException , TagException;
 
     List<Tag> getTags(Tweet tweet) throws SQLException;
 

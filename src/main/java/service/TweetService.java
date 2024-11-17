@@ -1,5 +1,6 @@
 package service;
 
+import entities.Tag;
 import entities.Tweet;
 import entities.User;
 import exceptions.TweetException;
@@ -8,7 +9,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface TweetService {
-    Tweet addTweet(String tweetText) throws SQLException;
+    Tweet addTweet(String tweetText, List<Tag> brief) throws SQLException;
 
     void displayTweet(Tweet choosenTweet) throws SQLException;
 
@@ -22,11 +23,11 @@ public interface TweetService {
 
     void deleteTweetRetweet(Tweet tweet) throws SQLException;
 
-    List<Tweet> getAllTweets() throws SQLException;
+    List<Tweet> getAllTweets() throws SQLException, TweetException;
 
-    boolean isTweetIdExist(long id) throws SQLException;
+    boolean isTweetIdExist(long id) throws SQLException, TweetException;
 
     void addActions(int action, long id) throws SQLException, TweetException;
 
-    void addRetweet(String retweetText, long id) throws SQLException;
+    void addRetweet(String retweetText, long id , List<Tag> brief) throws SQLException;
 }

@@ -3,6 +3,7 @@ package repository.Imp;
 import entities.Tweet;
 import entities.Tag;
 import config.Datasource;
+import exceptions.TagException;
 import repository.TagRepository;
 
 import java.sql.ResultSet;
@@ -107,13 +108,16 @@ public class TagRepositoryImp implements TagRepository {
     }
 
     @Override
-    public Tag findTagByTile(String title) throws SQLException {
+    public Tag findTagByTile(String title) throws SQLException , TagException {
         try (var statement = Datasource.getConnection().prepareStatement(FIND_BY_TITLE_SQL)) {
             statement.setString(1, title);
             ResultSet resultSet = statement.executeQuery();
             Tag tag = null;
             if (resultSet.next()) {
                 tag = read(resultSet.getInt(1));
+            }
+            else {
+                throw new TagException("Tag does not exist");
             }
             return tag;
         }
