@@ -1,6 +1,5 @@
 package service;
 
-import entities.Tag;
 import entities.Tweet;
 import entities.User;
 import exceptions.TweetException;

@@ -48,11 +48,11 @@ public class TweetRepositoryImp implements TweetRepository {
             """;
     private static final String GET_LIKES_SQL = """
             SELECT like_id FROM likes_tweet
-            WHERE tweet_id = ?
+            WHERE tweet_id = ? and is_like = true
             """;
     private static final String GET_DISLIKES_SQL = """
-            SELECT dislike_id FROM dislikes_tweet
-            WHERE tweet_id = ?
+            SELECT like_id FROM likes_tweet
+            WHERE tweet_id = ?  and is_like = false
             """;
     private static final String GET_VIEWS_SQL = """
             SELECT view_id FROM views_tweet
@@ -68,12 +68,12 @@ public class TweetRepositoryImp implements TweetRepository {
             """;
 
     private static final String INSERT_like_SQL = """
-             INSERT INTO likes_tweet(like_id,tweet_id)
-             VALUES (?, ?)
+             INSERT INTO likes_tweet(like_id,tweet_id,is_like)
+             VALUES (?, ?,true)
             """;
     private static final String INSERT_dislike_SQL = """
-             INSERT INTO dislikes_tweet(dislike_id,tweet_id)
-             VALUES (?, ?)
+             INSERT INTO likes_tweet(like_id,tweet_id,is_like)
+             VALUES (?, ?,false)
             """;
     private static final String INSERT_view_SQL = """
              INSERT INTO views_tweet(view_id,tweet_id)
@@ -85,11 +85,11 @@ public class TweetRepositoryImp implements TweetRepository {
             """;
     private static final String DELETE_LIKE_SQL = """
              DELETE FROM LIKES_tweet
-             WHERE tweet_id = ? and like_id = ?
+             WHERE tweet_id = ? and like_id = ? and is_like = true
             """;
     private static final String DELETE_DISLIKE_SQL = """
-             DELETE FROM disLIKES_tweet
-             WHERE tweet_id = ? and dislike_id = ?
+             DELETE FROM LIKES_tweet
+             WHERE tweet_id = ? and like_id = ? and is_like = false
             """;
     private static final String DELETE_ALL_view_SQL = """
              DELETE FROM views_tweet
@@ -97,11 +97,11 @@ public class TweetRepositoryImp implements TweetRepository {
             """;
     private static final String DELETE_ALL_LIKE_SQL = """
              DELETE FROM LIKES_tweet
-             WHERE tweet_id = ?
+             WHERE tweet_id = ? and is_like = true
             """;
     private static final String DELETE_ALL_DISLIKE_SQL = """
-             DELETE FROM disLIKES_tweet
-             WHERE tweet_id = ?
+             DELETE FROM LIKES_tweet
+             WHERE tweet_id = ? and is_like = false
             """;
     private static final String DELETE_ALL_RETWEET_SQL = """
              DELETE FROM retweet_tweets
