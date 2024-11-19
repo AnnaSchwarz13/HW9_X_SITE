@@ -36,19 +36,8 @@ public class TweetServiceImp implements TweetService {
     }
 
     @Override
-    public void addActions(int action, long id) throws SQLException, TweetException {
-        if (action == 1) {
-            if (!tweetRepositoryImp.read(id).getLikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
-                tweetRepositoryImp.updateLike(tweetRepositoryImp.read(id).getId(), authenticationServiceImp.getLoggedUser().getId());
-                tweetRepositoryImp.read(id).getLikes_ids().add(authenticationServiceImp.getLoggedUser().getId());
-                if (tweetRepositoryImp.read(id).getDislikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
-                    tweetRepositoryImp.deleteDislike(id, authenticationServiceImp.getLoggedUser().getId());
-                    System.out.println("liked!");
-                }
-            } else {
-                throw new TweetException("You are already liked!");
-            }
-        } else if (action == 2) {
+    public void addDislike(long id) throws SQLException, TweetException {
+
             if (!tweetRepositoryImp.read(id).getDislikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
                 tweetRepositoryImp.updateDislike(tweetRepositoryImp.read(id).getId(), authenticationServiceImp.getLoggedUser().getId());
                 tweetRepositoryImp.read(id).getDislikes_ids().add(authenticationServiceImp.getLoggedUser().getId());
@@ -60,7 +49,22 @@ public class TweetServiceImp implements TweetService {
                throw new TweetException("You are already disliked!");
             }
         }
+
+    @Override
+    public void addLike(long id) throws SQLException, TweetException {
+
+        if (!tweetRepositoryImp.read(id).getLikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
+            tweetRepositoryImp.updateLike(tweetRepositoryImp.read(id).getId(), authenticationServiceImp.getLoggedUser().getId());
+            tweetRepositoryImp.read(id).getLikes_ids().add(authenticationServiceImp.getLoggedUser().getId());
+            if (tweetRepositoryImp.read(id).getDislikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
+                tweetRepositoryImp.deleteDislike(id, authenticationServiceImp.getLoggedUser().getId());
+                System.out.println("liked!");
+            }
+        } else {
+            throw new TweetException("You are already liked!");
+        }
     }
+
 
     @Override
     public void editTweetText(String newText, Tweet chosenTweet) throws SQLException {

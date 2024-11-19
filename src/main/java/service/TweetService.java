@@ -27,7 +27,9 @@ public interface TweetService {
 
     boolean isTweetIdExist(long id) throws SQLException, TweetException;
 
-    void addActions(int action, long id) throws SQLException, TweetException;
+    void addLike(long id) throws SQLException, TweetException;
+
+    void addDislike(long id) throws SQLException, TweetException;
 
     void addRetweet(String retweetText, long id , List<Long> brief) throws SQLException;
 }

@@ -20,7 +20,7 @@ static TweetService tweetService = new TweetServiceImp();
 static TagService tagService = new TagServiceImp();
 static Scanner scanner = new Scanner(System.in);
 
-public static void main(String[] args) throws SQLException{
+public static void main(String[] args) throws SQLException {//handle SQLExceptions in service
 
     while (true) {
 
@@ -41,7 +41,7 @@ public static void main(String[] args) throws SQLException{
                     3.Edit your tweets
                     4.Edite profile
                     5.logout""");
-            int option = scanner.nextInt();
+            int option = scanner.nextInt();//just int? wrong input exception
             xSiteMenu(option);
 
         }
@@ -160,16 +160,17 @@ public static void xSiteMenu(int option) throws SQLException{
                         String tagName = scanner.nextLine() + scanner.nextLine();
                         try {
                             tagService.isTagExist(tagName);
-                            newTags.removeIf(tag -> {
-                                try {
-                                    return tagService.getTagById(tag).getTitle().equals(tagName);
-                                } catch (SQLException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            });
                         } catch (TagException e) {
                             System.out.println(e.getMessage());
                         }
+                            newTags.removeIf(tag -> {
+                                try {
+                                    return tagService.getTagById(tag).getTitle().equals(tagName);
+                                } catch (SQLException e) {//
+                                    throw new RuntimeException(e);
+                                }
+                            });
+
                     }
                     if (choose2 == -1) {
                         tagService.updateTagList(newTags, id);
@@ -196,7 +197,7 @@ public static void xSiteMenu(int option) throws SQLException{
                 }
             }
         }
-        } catch (TweetException e){
+        } catch (TweetException e) {//dont use large scoop for try
             System.out.println(e.getMessage());
         }
     } else if (option == 4) {
@@ -282,18 +283,25 @@ public static void showTweetList() throws SQLException {
 
             if (id == -1) {
                 break;
-            } else if (tweetService.isTweetIdExist(id)) {
+            } else if (tweetService.isTweetIdExist(id)) {//like and dislike could be true or false
                 System.out.println("""
                         1.Like!
                         2.Dislike!
                         3.Retweet""");
                 int action = scanner.nextInt();
-                try {
-                    tweetService.addActions(action, id);
-                } catch (TweetException e) {
-                    System.out.println(e.getMessage());
-                }
-                if (action == 3) {
+                if (action == 1) {
+                    try {
+                        tweetService.addLike(id);
+                    } catch (TweetException e) {
+                        System.out.println(e.getMessage());
+                    }
+                } else if (action == 2) {
+                    try {
+                        tweetService.addDislike(id);
+                    } catch (TweetException e) {
+                        System.out.println(e.getMessage());
+                    }
+                } else if (action == 3) {
                     System.out.println("replay:");
                     System.out.println("Enter tweet text: ");
                     String tweetText = scanner.nextLine() + scanner.nextLine();
@@ -306,7 +314,6 @@ public static void showTweetList() throws SQLException {
     } catch (TweetException e) {
         System.out.println(e.getMessage());
     }
-
 }
 
 public static List<Long> chooseTags() throws SQLException {
