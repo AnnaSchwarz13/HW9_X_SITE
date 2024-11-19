@@ -22,8 +22,8 @@ import java.util.regex.Pattern;
 
 
 public class AuthenticationServiceImp implements AuthenticationService {
-  UserRepositoryImp userRepositoryImp = new UserRepositoryImp();
-  TweetRepositoryImp tweetRepositoryImp = new TweetRepositoryImp();
+    UserRepositoryImp userRepositoryImp = new UserRepositoryImp();
+    TweetRepositoryImp tweetRepositoryImp = new TweetRepositoryImp();
 
     private static User loggedInUser;
 
@@ -47,27 +47,42 @@ public class AuthenticationServiceImp implements AuthenticationService {
     }
 
     @Override
-    public boolean isUsernameNew(String username) throws SQLException, UserException {
-        if(userRepositoryImp.isUsernameExist(username)) {
-            throw new UserException("Username is already exist!");
+    public boolean isUsernameNew(String username) throws UserException {
+        try {
+            if (userRepositoryImp.isUsernameExist(username)) {
+                throw new UserException("Username is already exist!");
+            }
+            return !userRepositoryImp.isUsernameExist(username);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
-        return !userRepositoryImp.isUsernameExist(username);
+        return false;
     }
 
     @Override
-    public boolean isEmailNew(String email) throws SQLException, UserException {
-        if(userRepositoryImp.isEmailExist(email)) {
-            throw new UserException("Email already exist!");
+    public boolean isEmailNew(String email) throws UserException {
+        try {
+            if (userRepositoryImp.isEmailExist(email)) {
+                throw new UserException("Email already exist!");
+            }
+            return !userRepositoryImp.isEmailExist(email);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
-        return !userRepositoryImp.isEmailExist(email);
+        return false;
     }
 
     @Override
-    public boolean isTweetForLoggedInUser(Long id) throws SQLException, TweetException {
-        if(id<0||tweetRepositoryImp.read(id).getUser().getId()!=loggedInUser.getId()) {
+    public boolean isTweetForLoggedInUser(Long id) throws TweetException {
+        try {
+            if (id < 0 || tweetRepositoryImp.read(id).getUser().getId() != loggedInUser.getId()) {
             throw new TweetException("Wrong id");
         }
         return tweetRepositoryImp.read(id).getUser().getId() == loggedInUser.getId();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return false;
     }
 
     /**

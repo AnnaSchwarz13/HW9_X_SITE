@@ -2,8 +2,6 @@ package service;
 
 import exceptions.UserException;
 
-import java.sql.SQLException;
-
 public interface UserService {
     void userSignup(String username, String password, String bio, String email, String displayName) ;
 
