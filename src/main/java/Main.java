@@ -164,13 +164,8 @@ public static void xSiteMenu(int option) throws SQLException{
                             System.out.println(e.getMessage());
                         }
                             newTags.removeIf(tag -> {
-                                try {
                                     return tagService.getTagById(tag).getTitle().equals(tagName);
-                                } catch (SQLException e) {//
-                                    throw new RuntimeException(e);
-                                }
                             });
-
                     }
                     if (choose2 == -1) {
                         tagService.updateTagList(newTags, id);
@@ -225,7 +220,7 @@ public static void changeProfile() {
         String newUsername = scanner.next();
         try {
             userService.changeUsername(username, newUsername);
-        } catch (UserException | SQLException e) {
+        } catch (UserException e) {
             System.out.println(e.getMessage());
         }
     } else if (option == 2) {
@@ -237,8 +232,6 @@ public static void changeProfile() {
             userService.changeEmail(oldEmail, newEmail);
         } catch (UserException e) {
             System.out.println(e.getMessage());
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     } else if (option == 3) {
         System.out.println("Enter old password");
@@ -247,26 +240,20 @@ public static void changeProfile() {
         String newPassword = scanner.next();
         try {
             userService.changePassword(oldPassword, newPassword);
-        } catch (UserException | SQLException e) {
+        } catch (UserException e) {
             System.out.println(e.getMessage());
         }
     } else if (option == 4) {
         System.out.println("Enter new DisplayName");
         String newDisplayName = scanner.next();
-        try {
-            userService.changeDisplayName(newDisplayName);
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+        userService.changeDisplayName(newDisplayName);
+
 
     } else if (option == 5) {
         System.out.println("Enter new Bio");
         String newBio = scanner.next();
-        try {
-            userService.changeBio(newBio);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        userService.changeBio(newBio);
+
     }
 }
 
@@ -316,7 +303,7 @@ public static void showTweetList() throws SQLException {
     }
 }
 
-public static List<Long> chooseTags() throws SQLException {
+public static List<Long> chooseTags(){
     List<Long> tags = new ArrayList<>();
     tagService.showAllTags();
     while (true) {
