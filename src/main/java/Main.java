@@ -283,7 +283,7 @@ public static void showTweetList() throws SQLException {
 
             if (id == -1) {
                 break;
-            } else if (tweetService.isTweetIdExist(id)) {//like and dislike could be true or false
+            } else if (tweetService.isTweetIdExist(id)) {
                 System.out.println("""
                         1.Like!
                         2.Dislike!
