@@ -2,6 +2,8 @@ package service;
 
 import exceptions.UserException;
 
+import java.util.Scanner;
+
 public interface UserService {
     void userSignup(String username, String password, String bio, String email, String displayName) ;
 
@@ -20,4 +22,6 @@ public interface UserService {
     void changeEmail(String oldEmail, String newEmail) throws  UserException;
 
     void changeBio(String newBio) ;
+
+    long numericInput(Scanner scanner);
 }

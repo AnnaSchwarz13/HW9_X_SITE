@@ -6,6 +6,8 @@ import repository.Imp.UserRepositoryImp;
 import service.UserService;
 
 import java.sql.SQLException;
+import java.util.InputMismatchException;
+import java.util.Scanner;
 
 public class UserServiceImp implements UserService {
 
@@ -141,6 +143,21 @@ public class UserServiceImp implements UserService {
         }catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    @Override
+    public long numericInput(Scanner scanner){
+        long input;
+        while (true) {
+            try {
+                input = scanner.nextLong();
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("Wrong Input!");
+                scanner.nextLine();
+            }
+        }
+        return input;
     }
 
 }

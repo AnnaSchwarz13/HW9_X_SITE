@@ -29,7 +29,8 @@ public static void main(String[] args){
                     1.login with username
                     2.login with email
                     3.singUp""");
-            int option = scanner.nextInt();
+
+            long option = userService.numericInput(scanner);
             loginMenu(option);
         }
         while (authenticationService.getLoggedUser() != null) {
@@ -40,14 +41,14 @@ public static void main(String[] args){
                     3.Edit your tweets
                     4.Edite profile
                     5.logout""");
-            int option = scanner.nextInt();//just int? wrong input exception
+            long option = userService.numericInput(scanner);
             xSiteMenu(option);
 
         }
     }
 }
 
-public static void loginMenu(int option){
+public static void loginMenu(long option) {
     if (option == 1) {
         System.out.println("enter your username:");
         String username = scanner.next();
@@ -101,7 +102,7 @@ public static void loginMenu(int option){
     }
 }
 
-public static void xSiteMenu(int option) {
+public static void xSiteMenu(long option) {
     if (option == 1) {
         showTweetList();
     } else if (option == 2) {
@@ -119,7 +120,7 @@ public static void xSiteMenu(int option) {
                 tweetService.displayRetweet(tweet, 0);
             }
         }
-        long id = scanner.nextLong();
+        long id = userService.numericInput(scanner);
         try{
         if (authenticationService.isTweetForLoggedInUser(id)) {
             System.out.println("Which do you want to edit?");
@@ -129,7 +130,7 @@ public static void xSiteMenu(int option) {
                             3.delete
                     """
             );
-            int choose = scanner.nextInt();
+            long choose = userService.numericInput(scanner);
             if (choose == 1) {
                 System.out.println("Please enter the new content:");
                 String newText = scanner.nextLine() + scanner.nextLine();
@@ -149,7 +150,7 @@ public static void xSiteMenu(int option) {
                         }
                         System.out.println("for add more enter 1 \n remove one tag enter 2 \n and at the end -1");
                     }
-                    int choose2 = scanner.nextInt();
+                    long choose2 = userService.numericInput(scanner);
                     if (choose2 == 1) {
                         List<Long> newTagsToAdd = chooseTags();
                         newTags.addAll(newTagsToAdd);
@@ -184,7 +185,7 @@ public static void xSiteMenu(int option) {
                 System.out.println("""
                         1.CONFIRM
                         2.REJECT""");
-                int action = scanner.nextInt();
+                long action = userService.numericInput(scanner);
                 if (action == 1) {
                     tweetService.deleteTweetRetweet(tweetService.getTweetById(id));
                     System.out.println("Tweet successfully removed");
@@ -212,7 +213,7 @@ public static void changeProfile() {
             3.Password
             4.DisplayName
             5.Bio""");
-    int option = scanner.nextInt();
+    long option = userService.numericInput(scanner);
 
     if (option == 1) {
         System.out.println("Enter old Username");
@@ -267,7 +268,7 @@ public static void showTweetList() {
                 tweetService.displayTweet(tempTweet);
             }
 
-            long id = scanner.nextLong();
+            long id = userService.numericInput(scanner);
 
             if (id == -1) {
                 break;
@@ -276,7 +277,7 @@ public static void showTweetList() {
                         1.Like!
                         2.Dislike!
                         3.Retweet""");
-                int action = scanner.nextInt();
+                long action = userService.numericInput(scanner);
                 if (action == 1) {
                     try {
                         tweetService.addLike(id);
