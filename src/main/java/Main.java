@@ -9,7 +9,6 @@ import service.Imp.UserServiceImp;
 import service.TagService;
 import service.TweetService;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -20,7 +19,7 @@ static TweetService tweetService = new TweetServiceImp();
 static TagService tagService = new TagServiceImp();
 static Scanner scanner = new Scanner(System.in);
 
-public static void main(String[] args) throws SQLException {//handle SQLExceptions in service
+public static void main(String[] args){
 
     while (true) {
 
@@ -48,7 +47,7 @@ public static void main(String[] args) throws SQLException {//handle SQLExceptio
     }
 }
 
-public static void loginMenu(int option) throws SQLException {
+public static void loginMenu(int option){
     if (option == 1) {
         System.out.println("enter your username:");
         String username = scanner.next();
@@ -102,7 +101,7 @@ public static void loginMenu(int option) throws SQLException {
     }
 }
 
-public static void xSiteMenu(int option) throws SQLException{
+public static void xSiteMenu(int option) {
     if (option == 1) {
         showTweetList();
     } else if (option == 2) {
@@ -160,12 +159,14 @@ public static void xSiteMenu(int option) throws SQLException{
                         String tagName = scanner.nextLine() + scanner.nextLine();
                         try {
                             tagService.isTagExist(tagName);
+                            for(long tag : newTags) {
+                                if (tagService.getTagById(tag).getTitle().equals(tagName)){
+                                    newTags.remove(tag);
+                                }
+                            }
                         } catch (TagException e) {
                             System.out.println(e.getMessage());
                         }
-                            newTags.removeIf(tag -> {
-                                    return tagService.getTagById(tag).getTitle().equals(tagName);
-                            });
                     }
                     if (choose2 == -1) {
                         tagService.updateTagList(newTags, id);
@@ -192,7 +193,7 @@ public static void xSiteMenu(int option) throws SQLException{
                 }
             }
         }
-        } catch (TweetException e) {//dont use large scoop for try
+        } catch (TweetException e) {//don't use large scoop for try
             System.out.println(e.getMessage());
         }
     } else if (option == 4) {
@@ -257,7 +258,7 @@ public static void changeProfile() {
     }
 }
 
-public static void showTweetList() throws SQLException {
+public static void showTweetList() {
     try {
         while (true) {
             System.out.println("for more action enter tweet's id else -1 ");
