@@ -44,12 +44,15 @@ public class TweetServiceImp implements TweetService {
 
     @Override
     public void addDislike(long id) throws TweetException {
+
         try {
+            if (tweetRepositoryImp.read(id).getLikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
+                tweetRepositoryImp.deleteLike(id, authenticationServiceImp.getLoggedUser().getId());
+            }
             if (!tweetRepositoryImp.read(id).getDislikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
-                tweetRepositoryImp.updateDislike(tweetRepositoryImp.read(id).getId(), authenticationServiceImp.getLoggedUser().getId());
-                tweetRepositoryImp.read(id).getDislikes_ids().add(authenticationServiceImp.getLoggedUser().getId());
-                if (tweetRepositoryImp.read(id).getLikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
-                    tweetRepositoryImp.deleteLike(id, authenticationServiceImp.getLoggedUser().getId());
+                if (!tweetRepositoryImp.read(id).getLikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
+                    tweetRepositoryImp.updateDislike(tweetRepositoryImp.read(id).getId(), authenticationServiceImp.getLoggedUser().getId());
+                    tweetRepositoryImp.read(id).getDislikes_ids().add(authenticationServiceImp.getLoggedUser().getId());
                     System.out.println("disliked!");
                     return;
                 }
@@ -64,11 +67,13 @@ public class TweetServiceImp implements TweetService {
     @Override
     public void addLike(long id) throws TweetException {
         try {
+            if (tweetRepositoryImp.read(id).getDislikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
+                tweetRepositoryImp.deleteDislike(id, authenticationServiceImp.getLoggedUser().getId());
+            }
             if (!tweetRepositoryImp.read(id).getLikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
-                tweetRepositoryImp.updateLike(tweetRepositoryImp.read(id).getId(), authenticationServiceImp.getLoggedUser().getId());
-                tweetRepositoryImp.read(id).getLikes_ids().add(authenticationServiceImp.getLoggedUser().getId());
-                if (tweetRepositoryImp.read(id).getDislikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
-                    tweetRepositoryImp.deleteDislike(id, authenticationServiceImp.getLoggedUser().getId());
+                if (!tweetRepositoryImp.read(id).getDislikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
+                    tweetRepositoryImp.updateLike(tweetRepositoryImp.read(id).getId(), authenticationServiceImp.getLoggedUser().getId());
+                    tweetRepositoryImp.read(id).getLikes_ids().add(authenticationServiceImp.getLoggedUser().getId());
                     System.out.println("liked!");
                     return;
                 }
