@@ -44,7 +44,6 @@ public class TweetServiceImp implements TweetService {
 
     @Override
     public void addDislike(long id) throws TweetException {
-
         try {
             if (tweetRepositoryImp.read(id).getLikes_ids().contains(authenticationServiceImp.getLoggedUser().getId())) {
                 tweetRepositoryImp.deleteLike(id, authenticationServiceImp.getLoggedUser().getId());

@@ -112,7 +112,6 @@ public class UserServiceImp implements UserService {
     public void changeEmail(String oldEmail, String newEmail) throws UserException {
         if (authenticationServiceImp.getLoggedUser().getEmail().equals(oldEmail)) {
             try {
-
                 if (authenticationServiceImp.isEmailNew(newEmail)) {
                     userRepositoryImp.updateEmail(authenticationServiceImp.getLoggedUser().getId(), newEmail);
                     System.out.println("Email changed successfully");
@@ -131,8 +130,9 @@ public class UserServiceImp implements UserService {
         try {
         userRepositoryImp.updateBio(authenticationServiceImp.getLoggedUser().getId(), newBio);
         System.out.println("Successful!");
-    }catch (SQLException e) {
-            System.out.println(e.getMessage());}
+            }catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override

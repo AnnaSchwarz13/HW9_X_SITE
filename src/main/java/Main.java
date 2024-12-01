@@ -42,7 +42,11 @@ public static void main(String[] args){
                     4.Edite profile
                     5.logout""");
             long option = userService.numericInput(scanner);
-            xSiteMenu(option);
+            try {
+                xSiteMenu(option);
+            }catch (TweetException e){
+                System.out.println(e.getMessage());
+            }
 
         }
     }
@@ -80,7 +84,6 @@ public static void loginMenu(long option) {
                     while (true) {
                         System.out.println("enter your email :");
                         String email = scanner.next();
-                        try {
                             if (authenticationService.isEmailNew(email)) {
                                 System.out.println("enter your Bio :");
                                 String bio = scanner.next();
@@ -89,9 +92,6 @@ public static void loginMenu(long option) {
                                 userService.userSignup(username, password, email, bio, displayName);
                                 break;
                             }
-                        }catch (UserException e) {
-                            System.out.println(e.getMessage());
-                        }
                     }
                     break;
                 }
@@ -102,7 +102,7 @@ public static void loginMenu(long option) {
     }
 }
 
-public static void xSiteMenu(long option) {
+public static void xSiteMenu(long option) throws TweetException {
     if (option == 1) {
         showTweetList();
     } else if (option == 2) {
@@ -121,7 +121,6 @@ public static void xSiteMenu(long option) {
             }
         }
         long id = userService.numericInput(scanner);
-        try{
         if (authenticationService.isTweetForLoggedInUser(id)) {
             System.out.println("Which do you want to edit?");
             System.out.println("""
@@ -193,9 +192,6 @@ public static void xSiteMenu(long option) {
                     System.out.println("Action canceled !");
                 }
             }
-        }
-        } catch (TweetException e) {//don't use large scoop for try
-            System.out.println(e.getMessage());
         }
     } else if (option == 4) {
         changeProfile();
